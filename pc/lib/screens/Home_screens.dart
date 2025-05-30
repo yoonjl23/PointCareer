@@ -41,7 +41,7 @@ class _HomeScreensState extends State<HomeScreens> {
             fontSize: 36, fontWeight: FontWeight.w800,
           ),), 
           const Text ("완벽한 준비", style: TextStyle(fontSize: 36, fontWeight: FontWeight.w800,),),
-          Text("나에게 딱 맞는 프로그램을 추천 받으세요!", style: TextStyle(
+          const Text("나에게 딱 맞는 프로그램을 추천 받으세요!", style: TextStyle(
             fontSize: 20,
           ),),
           Padding(

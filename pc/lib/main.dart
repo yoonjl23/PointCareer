@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:pc/screens/Home_screens.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
