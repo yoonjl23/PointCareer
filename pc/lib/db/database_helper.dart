@@ -23,8 +23,7 @@ class DatabaseHelper {
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            studentId TEXT UNIQUE,
+            studentId TEXT PRIMARY KEY,
             password TEXT
           )
         ''');
@@ -38,7 +37,6 @@ class DatabaseHelper {
       return await db.insert(
         'users',
         {'studentId': studentId, 'password': password},
-        conflictAlgorithm: ConflictAlgorithm.abort,
       );
     } catch (e) {
       print('Insert failed: $e');
@@ -50,21 +48,17 @@ class DatabaseHelper {
     final db = await database;
     final result = await db.query(
       'users',
-      where: 'id = ? AND password = ?',
+      where: 'studentId = ? AND password = ?',
       whereArgs: [studentId, password],
     );
     return result.isNotEmpty;
   }
 
-  Future<List<Map<String, dynamic>>> getAllUsers() async {
-    final db = await database;
-    return await db.query('users');
-  }
-
   Future<void> debugPrintAllUsers() async {
-    final users = await getAllUsers();
+    final db = await database;
+    final users = await db.query('users');
     for (var user in users) {
-      print('📋 User => ${user['studentId']} / ${user['password']}');
+      print('📋 ${user['studentId']} / ${user['password']}');
     }
   }
 }

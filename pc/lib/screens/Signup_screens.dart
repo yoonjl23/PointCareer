@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pc/db/database_helper.dart';
 import 'package:pc/screens/Phoneauth_screens.dart';
 import 'package:pc/screens/Terms_screens.dart';
 
@@ -19,9 +18,9 @@ class _SignupScreensState extends State<SignupScreens> {
   final _formKey = GlobalKey<FormState>();
 
   void _goToTermsPage() {
-    final id = idController.text;
-    final password = passwordController.text;
-    final confirmPassword = confirmPasswordController.text;
+    final id = idController.text.trim();
+    final password = passwordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
 
     setState(() {
       passwordError = null;
@@ -35,12 +34,13 @@ class _SignupScreensState extends State<SignupScreens> {
         return;
       }
 
+      // 약관 화면으로 이동, 동의 시 인증 화면으로 이동
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => TermsScreens(
             onAgree: () {
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => PhoneauthScreens(
@@ -169,24 +169,16 @@ class _SignupScreensState extends State<SignupScreens> {
               _buildTextField(
                 label: "학번",
                 controller: idController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return '학번을 입력하세요.';
-                  }
-                  return null;
-                },
+                validator: (value) =>
+                    value == null || value.trim().isEmpty ? '학번을 입력하세요.' : null,
               ),
               _buildLabel("비밀번호"),
               _buildTextField(
                 label: "비밀번호",
                 controller: passwordController,
                 obscure: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return '비밀번호를 입력하세요.';
-                  }
-                  return null;
-                },
+                validator: (value) =>
+                    value == null || value.isEmpty ? '비밀번호를 입력하세요.' : null,
               ),
               _buildLabel("비밀번호 확인"),
               _buildTextField(
@@ -194,12 +186,8 @@ class _SignupScreensState extends State<SignupScreens> {
                 controller: confirmPasswordController,
                 obscure: true,
                 errorText: passwordError,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return '비밀번호 확인을 입력하세요.';
-                  }
-                  return null;
-                },
+                validator: (value) =>
+                    value == null || value.isEmpty ? '비밀번호 확인을 입력하세요.' : null,
               ),
               const SizedBox(height: 50),
               Padding(

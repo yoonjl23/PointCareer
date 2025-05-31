@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pc/db/database_helper.dart';
 import 'package:pc/screens/Login_screens.dart';
 
 class PhoneauthScreens extends StatefulWidget {
@@ -20,6 +21,21 @@ class _PhoneauthScreensState extends State<PhoneauthScreens> {
   final TextEditingController codeController = TextEditingController();
   bool codeSent = false;
   String? codeError;
+
+  Future<void> _completeSignup() async {
+    final result = await DatabaseHelper.instance.insertUser(widget.id, widget.password);
+    if (result > 0) {
+      print('✅ 회원가입 성공: ${widget.id}');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreens()),
+      );
+    } else {
+      setState(() {
+        codeError = '이미 등록된 아이디입니다.';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,21 +129,14 @@ class _PhoneauthScreensState extends State<PhoneauthScreens> {
               child: ElevatedButton(
                 onPressed: () async {
                   if (!codeSent) {
-                    // 실제 SMS 인증 요청 로직이 들어갈 부분
                     setState(() {
                       codeSent = true;
+                      codeError = null;
                     });
                   } else {
-                    final code = codeController.text;
-
+                    final code = codeController.text.trim();
                     if (code == "123456") {
-                      // 예시: 코드가 맞으면 로그인 화면으로 이동
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginScreens(),
-                        ),
-                      );
+                      await _completeSignup();
                     } else {
                       setState(() {
                         codeError = '인증번호가 올바르지 않습니다.';
@@ -148,4 +157,6 @@ class _PhoneauthScreensState extends State<PhoneauthScreens> {
           ],
         ),
       ),
-    );}}
+    );
+  }
+}
