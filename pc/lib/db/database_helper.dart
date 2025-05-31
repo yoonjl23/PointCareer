@@ -1,4 +1,4 @@
-import 'package:sqflite/sqflite.dart'; // ✅ sqflite만 import
+import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class DatabaseHelper {
@@ -24,7 +24,7 @@ class DatabaseHelper {
         await db.execute('''
           CREATE TABLE users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT UNIQUE,
+            studentId TEXT UNIQUE,
             password TEXT
           )
         ''');
@@ -32,12 +32,12 @@ class DatabaseHelper {
     );
   }
 
-  Future<int> insertUser(String email, String password) async {
+  Future<int> insertUser(String studentId, String password) async {
     final db = await database;
     try {
       return await db.insert(
         'users',
-        {'email': email, 'password': password},
+        {'studentId': studentId, 'password': password},
         conflictAlgorithm: ConflictAlgorithm.abort,
       );
     } catch (e) {
@@ -46,13 +46,25 @@ class DatabaseHelper {
     }
   }
 
-  Future<bool> emailExists(String email) async {
+  Future<bool> verifyUser(String studentId, String password) async {
     final db = await database;
     final result = await db.query(
       'users',
-      where: 'email = ?',
-      whereArgs: [email],
+      where: 'id = ? AND password = ?',
+      whereArgs: [studentId, password],
     );
     return result.isNotEmpty;
+  }
+
+  Future<List<Map<String, dynamic>>> getAllUsers() async {
+    final db = await database;
+    return await db.query('users');
+  }
+
+  Future<void> debugPrintAllUsers() async {
+    final users = await getAllUsers();
+    for (var user in users) {
+      print('📋 User => ${user['studentId']} / ${user['password']}');
+    }
   }
 }

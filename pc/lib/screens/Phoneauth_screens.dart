@@ -1,7 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:pc/screens/Login_screens.dart';
 
-class PhoneauthScreens extends StatelessWidget {
-  const PhoneauthScreens({super.key});
+class PhoneauthScreens extends StatefulWidget {
+  final String id;
+  final String password;
+
+  const PhoneauthScreens({
+    super.key,
+    required this.id,
+    required this.password,
+  });
+
+  @override
+  State<PhoneauthScreens> createState() => _PhoneauthScreensState();
+}
+
+class _PhoneauthScreensState extends State<PhoneauthScreens> {
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController codeController = TextEditingController();
+  bool codeSent = false;
+  String? codeError;
 
   @override
   Widget build(BuildContext context) {
@@ -12,6 +30,122 @@ class PhoneauthScreens extends StatelessWidget {
         backgroundColor: const Color(0xFFF2F2F2),
         elevation: 0,
       ),
-    );
-  }
-}
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 60),
+            const Text(
+              "휴대폰 인증",
+              style: TextStyle(
+                fontSize: 24,
+                fontFamily: 'Roboto',
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 30),
+            const Text(
+              "가입을 위해 본인의\n휴대폰 번호를 인증해 주세요.",
+              style: TextStyle(
+                fontFamily: 'Roboto',
+                fontWeight: FontWeight.w400,
+                fontSize: 18,
+              ),
+            ),
+            const SizedBox(height: 40),
+
+            // 휴대폰 번호 입력
+            TextFormField(
+              controller: phoneController,
+              keyboardType: TextInputType.phone,
+              decoration: InputDecoration(
+                labelText: '휴대폰 번호',
+                hintText: '01012345678',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: const Color(0xFFE9E9E9),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // 인증번호 입력
+            if (codeSent)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextFormField(
+                    controller: codeController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: '인증번호 입력',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xFFE9E9E9),
+                    ),
+                  ),
+                  if (codeError != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8, left: 4),
+                      child: Text(
+                        codeError!,
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+
+            const SizedBox(height: 24),
+
+            // 인증 요청 / 인증 완료 버튼
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () async {
+                  if (!codeSent) {
+                    // 실제 SMS 인증 요청 로직이 들어갈 부분
+                    setState(() {
+                      codeSent = true;
+                    });
+                  } else {
+                    final code = codeController.text;
+
+                    if (code == "123456") {
+                      // 예시: 코드가 맞으면 로그인 화면으로 이동
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreens(),
+                        ),
+                      );
+                    } else {
+                      setState(() {
+                        codeError = '인증번호가 올바르지 않습니다.';
+                      });
+                    }
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Text(codeSent ? '인증 완료' : '인증 요청'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );}}

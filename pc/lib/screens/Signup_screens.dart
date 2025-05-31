@@ -11,51 +11,15 @@ class SignupScreens extends StatefulWidget {
 }
 
 class _SignupScreensState extends State<SignupScreens> {
-  final TextEditingController emailController = TextEditingController();
+  final TextEditingController idController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
 
-  String? passwordError; // ✅ 에러 메시지 상태
+  String? passwordError;
   final _formKey = GlobalKey<FormState>();
 
-  void _signUp() async {
-    final email = emailController.text;
-    final password = passwordController.text;
-    final confirmPassword = confirmPasswordController.text;
-
-    setState(() {
-      passwordError = null;
-    });
-
-    if (_formKey.currentState!.validate()) {
-      if (password != confirmPassword) {
-        setState(() {
-          passwordError = '비밀번호가 일치하지 않습니다.';
-        });
-        return;
-      }
-
-      final db = DatabaseHelper.instance;
-      bool exists = await db.emailExists(email);
-      if (exists) {
-        setState(() {
-          passwordError = '이미 등록된 이메일입니다.';
-        });
-        return;
-      }
-
-      int result = await db.insertUser(email, password);
-      if (result != -1) {
-        Navigator.pop(context);
-      } else {
-        setState(() {
-          passwordError = '회원가입 실패 (오류)';
-        });
-      }
-    }
-  }
-
   void _goToTermsPage() {
+    final id = idController.text;
     final password = passwordController.text;
     final confirmPassword = confirmPasswordController.text;
 
@@ -76,8 +40,14 @@ class _SignupScreensState extends State<SignupScreens> {
         MaterialPageRoute(
           builder: (context) => TermsScreens(
             onAgree: () {
-              Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const PhoneauthScreens()),
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PhoneauthScreens(
+                    id: id,
+                    password: password,
+                  ),
+                ),
               );
             },
           ),
@@ -105,14 +75,14 @@ class _SignupScreensState extends State<SignupScreens> {
     required String label,
     required TextEditingController controller,
     bool obscure = false,
-    String? errorText, // ✅ 추가
+    String? errorText,
     required String? Function(String?) validator,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
       child: SizedBox(
         width: 372,
-        height: errorText == null ? 60 : 80, // 에러 메시지 표시 공간 확보
+        height: errorText == null ? 60 : 80,
         child: TextFormField(
           controller: controller,
           obscureText: obscure,
@@ -132,7 +102,7 @@ class _SignupScreensState extends State<SignupScreens> {
               color: Color(0xFF262626),
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 30),
-            errorText: errorText, // ✅ 여기서 보여짐
+            errorText: errorText,
           ),
         ),
       ),
@@ -195,20 +165,20 @@ class _SignupScreensState extends State<SignupScreens> {
                 ),
               ),
               const SizedBox(height: 50),
-              _buildLabel("이메일"),
+              _buildLabel("학번"),
               _buildTextField(
-                label: "email",
-                controller: emailController,
+                label: "학번",
+                controller: idController,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return '이메일을 입력하세요.';
+                    return '학번을 입력하세요.';
                   }
                   return null;
                 },
               ),
               _buildLabel("비밀번호"),
               _buildTextField(
-                label: "password",
+                label: "비밀번호",
                 controller: passwordController,
                 obscure: true,
                 validator: (value) {
@@ -220,10 +190,10 @@ class _SignupScreensState extends State<SignupScreens> {
               ),
               _buildLabel("비밀번호 확인"),
               _buildTextField(
-                label: "confirm password",
+                label: "비밀번호 확인",
                 controller: confirmPasswordController,
                 obscure: true,
-                errorText: passwordError, // ✅ 여기 적용
+                errorText: passwordError,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return '비밀번호 확인을 입력하세요.';
