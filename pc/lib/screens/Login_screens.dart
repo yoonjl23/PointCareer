@@ -59,24 +59,7 @@ class _LoginScreensState extends State<LoginScreens> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F2),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        onTap: (int index) {
-          print('탭 선택: $index');
-        },
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Image(image: AssetImage('assets/images/Home.png'), width: 35, height: 35),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Image(image: AssetImage('assets/images/User_cicrle.png'), width: 35, height: 35),
-            label: '',
-          ),
-        ],
-      ),
+      
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -97,13 +80,43 @@ class _LoginScreensState extends State<LoginScreens> {
             const SizedBox(height: 10),
 
             // 학번 입력
-            _buildInputField(studentIdController, Icons.person_outline, '학번(ID 입력)', false),
+            SizedBox(
+              width: 372,
+              height: 60,
+              child: TextFormField(
+                controller: studentIdController,
+                decoration: InputDecoration(
+                  hintText: 'sample@gmail.com',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                obscureText: false,
+              ),
+            ),
 
             const SizedBox(height: 10),
 
             // 비밀번호 입력
-            _buildInputField(passwordController, Icons.lock_outline, '비밀번호(password)', true),
-
+            SizedBox(
+              width: 372,
+              height: 60,
+              child: TextFormField(
+                controller: passwordController,
+                decoration: InputDecoration(
+                  hintText: '영문, 숫자, 특수문자 포함 8자 이상',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                obscureText: true,
+              ),
+            ),
+            
             if (loginError != null)
               Padding(
                 padding: const EdgeInsets.only(left: 20.0, top: 8.0),
@@ -128,7 +141,7 @@ class _LoginScreensState extends State<LoginScreens> {
               child: ElevatedButton(
                 onPressed: _login,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF555555),
+                  backgroundColor: const Color(0xFF1877DD),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -139,6 +152,38 @@ class _LoginScreensState extends State<LoginScreens> {
                 ),
               ),
             ),
+
+            const SizedBox(height: 10,),
+
+            SizedBox(
+              width: 372,
+              height: 60,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SignupScreens()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFF2F2F2),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text(
+                  '회원가입',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Color(0xFF7B7B7B),
+                    fontFamily: 'Roboto',
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+
+
 
             // 저장 및 회원가입
             Row(
@@ -161,23 +206,7 @@ class _LoginScreensState extends State<LoginScreens> {
                     ),
                   ),
                 ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const SignupScreens()),
-                    );
-                  },
-                  child: const Text(
-                    "회원가입",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF9D9D9D),
-                    ),
-                  ),
-                ),
+                
               ],
             ),
 

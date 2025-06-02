@@ -53,7 +53,7 @@ class _PhoneauthScreensState extends State<PhoneauthScreens> {
           children: [
             const SizedBox(height: 60),
             const Text(
-              "휴대폰 인증",
+              "이메일 인증",
               style: TextStyle(
                 fontSize: 24,
                 fontFamily: 'Roboto',

@@ -13,7 +13,6 @@ class _TermsScreensState extends State<TermsScreens> {
   bool allAgree = false;
   bool termAgree = false;
   bool priaccyAgree = false;
-  bool fourteenAgree = false;
   bool marketingAgree = false;
 
   String? errorMessage;
@@ -23,20 +22,19 @@ class _TermsScreensState extends State<TermsScreens> {
       allAgree = value ?? false;
       termAgree = allAgree;
       priaccyAgree = allAgree;
-      fourteenAgree = allAgree;
       marketingAgree = allAgree;
     });
   }
 
   void _toggleEach() {
     setState(() {
-      allAgree = termAgree && priaccyAgree && fourteenAgree && marketingAgree;
+      allAgree = termAgree && priaccyAgree && marketingAgree;
     });
   }
 
   void _onAgreePressed() {
     setState(() {
-      if (!termAgree || !priaccyAgree || !fourteenAgree) {
+      if (!termAgree || !priaccyAgree) {
         errorMessage = '필수 약관에 모두 동의해야 합니다.';
       } else {
         errorMessage = null;
@@ -130,7 +128,7 @@ class _TermsScreensState extends State<TermsScreens> {
             const Divider(thickness: 1, height: 30, color: Colors.grey),
 
             _buildCheckRow(
-              label: '(필수) 서비스 이용약관 동의',
+              label: '이용약관(필수)',
               value: termAgree,
               onChanged: (val) {
                 setState(() {
@@ -143,7 +141,7 @@ class _TermsScreensState extends State<TermsScreens> {
             ),
 
             _buildCheckRow(
-              label: '(필수) 개인정보 수집 및 이용에 대한 동의',
+              label: '개인정보 수집 및 이용 동의(필수수)',
               value: priaccyAgree,
               onChanged: (val) {
                 setState(() {
@@ -153,19 +151,6 @@ class _TermsScreensState extends State<TermsScreens> {
               },
               dialogTitle: '개인정보 수집 및 이용',
               dialogContent: '개인정보 수집 및 이용에 대한 동의 내용입니다.',
-            ),
-
-            _buildCheckRow(
-              label: '(필수) 만 14세 이상입니다',
-              value: fourteenAgree,
-              onChanged: (val) {
-                setState(() {
-                  fourteenAgree = val ?? false;
-                  _toggleEach();
-                });
-              },
-              dialogTitle: '만 14세 이상 확인',
-              dialogContent: '서비스 이용을 위해 만 14세 이상이어야 합니다.',
             ),
 
             _buildCheckRow(

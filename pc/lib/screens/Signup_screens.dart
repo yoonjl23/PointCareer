@@ -118,32 +118,7 @@ class _SignupScreensState extends State<SignupScreens> {
         elevation: 0,
       ),
       backgroundColor: const Color(0xFFF2F2F2),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        onTap: (int index) {
-          print('탭 선택: $index');
-        },
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Image(
-              image: AssetImage('assets/images/Home.png'),
-              width: 35,
-              height: 35,
-            ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Image(
-              image: AssetImage('assets/images/User_cicrle.png'),
-              width: 35,
-              height: 35,
-            ),
-            label: '',
-          ),
-        ],
-      ),
+      
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 30),
         child: Form(
@@ -165,31 +140,80 @@ class _SignupScreensState extends State<SignupScreens> {
                 ),
               ),
               const SizedBox(height: 50),
-              _buildLabel("학번"),
-              _buildTextField(
-                label: "학번",
-                controller: idController,
-                validator: (value) =>
-                    value == null || value.trim().isEmpty ? '학번을 입력하세요.' : null,
+              
+              Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: SizedBox(
+                  width: 372,
+                  height: 60,
+                  child: TextFormField(
+                    controller: idController,
+                    validator: (value) =>
+                      value == null || value.trim().isEmpty ? '이메일을 입력하세요' : null,
+                    decoration: InputDecoration(
+                      hintText: '이메일',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                  ),
+                ),
               ),
-              _buildLabel("비밀번호"),
-              _buildTextField(
-                label: "비밀번호",
-                controller: passwordController,
-                obscure: true,
-                validator: (value) =>
-                    value == null || value.isEmpty ? '비밀번호를 입력하세요.' : null,
+              Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: SizedBox(
+                  width: 372,
+                  height: 60,
+                  child: TextFormField(
+                    controller: passwordController,
+                    validator: (value) =>
+                      value == null || value.trim().isEmpty ? '비밀번호를 입력하세요' : null,
+                    decoration: InputDecoration(
+                      hintText: '영문, 숫자, 특수문자 포함 8자 이상',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                  ),
+                ),
               ),
-              _buildLabel("비밀번호 확인"),
-              _buildTextField(
-                label: "비밀번호 확인",
-                controller: confirmPasswordController,
-                obscure: true,
-                errorText: passwordError,
-                validator: (value) =>
-                    value == null || value.isEmpty ? '비밀번호 확인을 입력하세요.' : null,
+              Padding(
+                padding: const EdgeInsets.only(left: 24),
+                child: const Text('영문 대소문자/숫자/특수문자 중 2가지 이상 조합, 8자~32자',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontFamily: "Roboto",
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFFC4C4C4)
+                ),),
               ),
-              const SizedBox(height: 50),
+
+              const SizedBox(height: 50,),
+              Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: SizedBox(
+                  width: 372,
+                  height: 60,
+                  child: TextFormField(
+                    controller: confirmPasswordController,
+                    validator: (value) =>
+                      value == null || value.trim().isEmpty ? '비밀번호를 입력하세요' : null,
+                    decoration: InputDecoration(
+                      hintText: '비밀번호 재확인',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 150),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: SizedBox(
@@ -198,7 +222,7 @@ class _SignupScreensState extends State<SignupScreens> {
                   child: ElevatedButton(
                     onPressed: _goToTermsPage,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
+                      backgroundColor: Color(0xFFBBDFFF),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -207,7 +231,7 @@ class _SignupScreensState extends State<SignupScreens> {
                       '다음',
                       style: TextStyle(
                         fontSize: 24,
-                        color: Colors.black,
+                        color: Color(0xFF1877DD),
                       ),
                     ),
                   ),
