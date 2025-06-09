@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pc/db/database_helper.dart';
 import 'package:pc/screens/Login_screens.dart';
+import 'package:pc/screens/ProfileSetup_screens.dart';
 
 class PhoneauthScreens extends StatefulWidget {
   final String id;
@@ -28,7 +29,7 @@ class _PhoneauthScreensState extends State<PhoneauthScreens> {
       print('✅ 회원가입 성공: ${widget.id}');
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const LoginScreens()),
+        MaterialPageRoute(builder: (context) => const ProfilesetupScreens()),
       );
     } else {
       setState(() {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pc/screens/Home_screens.dart';
+import 'package:pc/screens/Loading_screens.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: HomeScreens(),
+      home: LoadingScreens(),
     );
   }
 }

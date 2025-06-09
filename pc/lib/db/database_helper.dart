@@ -61,4 +61,19 @@ class DatabaseHelper {
       print('📋 ${user['studentId']} / ${user['password']}');
     }
   }
+
+  Future<Map<String, dynamic>?> getUserById(String id) async {
+  final db = await database;
+  final result = await db.query(
+    'users',
+    where: 'id = ?',
+    whereArgs: [id],
+  );
+  if (result.isNotEmpty) {
+    return result.first; // 사용자 정보 반환
+  } else {
+    return null;
+  }
+}
+
 }

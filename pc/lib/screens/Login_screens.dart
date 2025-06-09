@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pc/screens/Signup_screens.dart';
 import 'package:pc/db/database_helper.dart';
-import 'Main_screens.dart';
+import 'Mine_screens.dart';
 
 class LoginScreens extends StatefulWidget {
   const LoginScreens({super.key});
@@ -45,7 +45,7 @@ class _LoginScreensState extends State<LoginScreens> {
       print('✅ 로그인 성공: $id');
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const MainScreens()),
+        MaterialPageRoute(builder: (context) => MineScreens(userId: id,)),
       );
     } else {
       print('❌ 로그인 실패');
