@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pc/screens/Nav_Screens.dart';
 import 'package:pc/screens/Signup_screens.dart';
 import 'package:pc/db/database_helper.dart';
 import 'Mine_screens.dart';
@@ -45,7 +46,7 @@ class _LoginScreensState extends State<LoginScreens> {
       print('✅ 로그인 성공: $id');
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => MineScreens(userId: id,)),
+        MaterialPageRoute(builder: (context) => NavScreens(userId: id,)),
       );
     } else {
       print('❌ 로그인 실패');
