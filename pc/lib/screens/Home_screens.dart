@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:pc/screens/Activity_list_screens.dart';
 import 'dart:math';
 
 import 'package:pc/screens/Recommendation_input_screens.dart';
+import 'package:pc/screens/job_list_screens.dart';
 
 class HomeScreens extends StatelessWidget {
   final String userId;
@@ -49,12 +51,21 @@ class HomeScreens extends StatelessWidget {
               buildCard(
                 title: '포인트 활동 전체 보기',
                 subtitle: '다양한 포인트 활동을 둘러보세요',
-                imagePath: 'assets/images/points.png'
+                imagePath: 'assets/images/points.png',
+                onTap: () {
+                  Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ActivityListScreens(userId: userId,)));
+                },
               ),
               buildCard(
                 title: '경기대 전용 추천 채용 정보',
                 subtitle: '다른 곳엔 없는 우리학교 기회만 알려드릴게요',
-                imagePath: 'assets/images/bags.png'
+                imagePath: 'assets/images/bags.png',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => JobListScreens(userId: userId)));
+                },
               ),
             ],
           ),
