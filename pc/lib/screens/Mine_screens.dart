@@ -109,6 +109,39 @@ class MineScreens extends StatelessWidget {
                 ),
               ),
             ),
+          ),
+          const SizedBox(height: 50,),
+          Padding(
+            padding: const EdgeInsets.only(left: 19),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Text('저장된 추천채용공고', style: TextStyle(
+                  fontFamily: "Roboto",
+                  fontWeight: FontWeight.w600,
+                  fontSize: 24,
+                  color: Color(0xFF262626),
+                ),),
+              ],
+            ),
+          ),
+          const SizedBox(height: 50,),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10)
+              ),
+              child: const TextField(
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'ex) 맞춤형 입력 설정',
+                  suffixIcon: Icon(Icons.search),
+                ),
+              ),
+            ),
           )
         ]
       ),

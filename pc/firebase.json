@@ -1,0 +1,33 @@
+{
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "pointcareer-34ca1",
+          "appId": "1:564619265801:android:b3fe007b3a29b592d7b5d8",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "pointcareer-34ca1",
+          "configurations": {
+            "android": "1:564619265801:android:b3fe007b3a29b592d7b5d8",
+            "ios": "1:564619265801:ios:f7ee65ad6fd50710d7b5d8",
+            "macos": "1:564619265801:ios:f7ee65ad6fd50710d7b5d8",
+            "web": "1:564619265801:web:e4cf9b408918e911d7b5d8",
+            "windows": "1:564619265801:web:71572b1fc8a37592d7b5d8"
+          }
+        }
+      }
+    }
+  }
+}
