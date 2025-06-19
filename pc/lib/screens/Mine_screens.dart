@@ -18,12 +18,15 @@ class MineScreens extends StatelessWidget {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('마이페이지', style: TextStyle(
-              fontFamily: "Roboto",
-              fontWeight: FontWeight.w400,
-              fontSize: 20,
-              color: Color(0xFF7B7B7B)
-            ),),
+            const Text(
+              '마이페이지',
+              style: TextStyle(
+                fontFamily: "Roboto",
+                fontWeight: FontWeight.w400,
+                fontSize: 20,
+                color: Color(0xFF7B7B7B),
+              ),
+            ),
           ],
         ),
         automaticallyImplyLeading: true,
@@ -32,7 +35,7 @@ class MineScreens extends StatelessWidget {
       ),
       body: Column(
         children: [
-          const SizedBox(height: 70,),
+          const SizedBox(height: 70),
           Padding(
             padding: const EdgeInsets.only(left: 20),
             child: Row(
@@ -41,65 +44,77 @@ class MineScreens extends StatelessWidget {
                   radius: 28,
                   backgroundImage: AssetImage('assets/images/cat.jpg'),
                 ),
-                const SizedBox(width: 12,),
+                const SizedBox(width: 12),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('$userId님', style: TextStyle(
-                      fontFamily: "Roboto",
-                      fontWeight: FontWeight.w400,
-                      fontSize: 24,
-                      color: Color(0xFF262626)
-                    ),),
-                    Text('산디과 3학년', style: TextStyle(
-                      fontFamily: "Roboto",
-                      fontWeight: FontWeight.w400,
-                      fontSize: 16,
-                      color: Color(0xFF262626),
-                    ),),
+                    Text(
+                      '$userId님',
+                      style: TextStyle(
+                        fontFamily: "Roboto",
+                        fontWeight: FontWeight.w400,
+                        fontSize: 24,
+                        color: Color(0xFF262626),
+                      ),
+                    ),
+                    Text(
+                      '산디과 3학년',
+                      style: TextStyle(
+                        fontFamily: "Roboto",
+                        fontWeight: FontWeight.w400,
+                        fontSize: 16,
+                        color: Color(0xFF262626),
+                      ),
+                    ),
                   ],
-                )
+                ),
               ],
             ),
           ),
-          const SizedBox(height: 50,),
+          const SizedBox(height: 50),
           Padding(
             padding: const EdgeInsets.only(left: 19),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const Text('찜한 프로그램/공고', style: TextStyle(
-                  fontFamily: "Roboto",
-                  fontWeight: FontWeight.w600,
-                  fontSize: 24,
-                  color: Color(0xFF262626),
-                ),),
+                const Text(
+                  '찜한 프로그램/공고',
+                  style: TextStyle(
+                    fontFamily: "Roboto",
+                    fontWeight: FontWeight.w600,
+                    fontSize: 24,
+                    color: Color(0xFF262626),
+                  ),
+                ),
               ],
             ),
           ),
-          const SizedBox(height: 50,),
+          const SizedBox(height: 50),
           Padding(
             padding: const EdgeInsets.only(left: 19),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const Text('저장된 KGU 프로그램', style: TextStyle(
-                  fontFamily: "Roboto",
-                  fontWeight: FontWeight.w600,
-                  fontSize: 24,
-                  color: Color(0xFF262626),
-                ),),
+                const Text(
+                  '저장된 KGU 프로그램',
+                  style: TextStyle(
+                    fontFamily: "Roboto",
+                    fontWeight: FontWeight.w600,
+                    fontSize: 24,
+                    color: Color(0xFF262626),
+                  ),
+                ),
               ],
             ),
           ),
-          const SizedBox(height: 50,),
+          const SizedBox(height: 50),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(10)
+                borderRadius: BorderRadius.circular(10),
               ),
               child: const TextField(
                 decoration: InputDecoration(
@@ -110,29 +125,32 @@ class MineScreens extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 50,),
+          const SizedBox(height: 50),
           Padding(
             padding: const EdgeInsets.only(left: 19),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const Text('저장된 추천채용공고', style: TextStyle(
-                  fontFamily: "Roboto",
-                  fontWeight: FontWeight.w600,
-                  fontSize: 24,
-                  color: Color(0xFF262626),
-                ),),
+                const Text(
+                  '저장된 추천채용공고',
+                  style: TextStyle(
+                    fontFamily: "Roboto",
+                    fontWeight: FontWeight.w600,
+                    fontSize: 24,
+                    color: Color(0xFF262626),
+                  ),
+                ),
               ],
             ),
           ),
-          const SizedBox(height: 50,),
+          const SizedBox(height: 50),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(10)
+                borderRadius: BorderRadius.circular(10),
               ),
               child: const TextField(
                 decoration: InputDecoration(
@@ -142,8 +160,8 @@ class MineScreens extends StatelessWidget {
                 ),
               ),
             ),
-          )
-        ]
+          ),
+        ],
       ),
     );
   }
