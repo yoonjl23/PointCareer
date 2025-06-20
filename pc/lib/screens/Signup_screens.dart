@@ -12,7 +12,8 @@ class SignupScreens extends StatefulWidget {
 class _SignupScreensState extends State<SignupScreens> {
   final TextEditingController idController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   String? passwordError;
   final _formKey = GlobalKey<FormState>();
@@ -38,19 +39,19 @@ class _SignupScreensState extends State<SignupScreens> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => TermsScreens(
-            onAgree: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => PhoneauthScreens(
-                    id: id,
-                    password: password,
-                  ),
-                ),
-              );
-            },
-          ),
+          builder:
+              (context) => TermsScreens(
+                onAgree: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) =>
+                              PhoneauthScreens(id: id, password: password),
+                    ),
+                  );
+                },
+              ),
         ),
       );
     }
@@ -58,7 +59,7 @@ class _SignupScreensState extends State<SignupScreens> {
 
   Widget _buildLabel(String text) {
     return Padding(
-      padding: const EdgeInsets.only(left: 19, bottom: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 19, vertical: 5),
       child: Text(
         text,
         style: const TextStyle(
@@ -118,7 +119,7 @@ class _SignupScreensState extends State<SignupScreens> {
         elevation: 0,
       ),
       backgroundColor: const Color(0xFFF2F2F2),
-      
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 30),
         child: Form(
@@ -128,7 +129,7 @@ class _SignupScreensState extends State<SignupScreens> {
             children: [
               const SizedBox(height: 70),
               const Padding(
-                padding: EdgeInsets.only(left: 19),
+                padding: EdgeInsets.symmetric(horizontal: 19),
                 child: Text(
                   "회원가입",
                   style: TextStyle(
@@ -140,18 +141,21 @@ class _SignupScreensState extends State<SignupScreens> {
                 ),
               ),
               const SizedBox(height: 50),
-              
+
               Padding(
-                padding: const EdgeInsets.only(left: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: SizedBox(
                   width: 372,
                   height: 60,
                   child: TextFormField(
                     controller: idController,
-                    validator: (value) =>
-                      value == null || value.trim().isEmpty ? '이메일을 입력하세요' : null,
+                    validator:
+                        (value) =>
+                            value == null || value.trim().isEmpty
+                                ? '이메일을 입력하세요'
+                                : null,
                     decoration: InputDecoration(
-                      hintText: '이메일',
+                      hintText: 'kyonggi@ac.kr',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -162,14 +166,17 @@ class _SignupScreensState extends State<SignupScreens> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: SizedBox(
                   width: 372,
                   height: 60,
                   child: TextFormField(
                     controller: passwordController,
-                    validator: (value) =>
-                      value == null || value.trim().isEmpty ? '비밀번호를 입력하세요' : null,
+                    validator:
+                        (value) =>
+                            value == null || value.trim().isEmpty
+                                ? '비밀번호를 입력하세요'
+                                : null,
                     decoration: InputDecoration(
                       hintText: '영문, 숫자, 특수문자 포함 8자 이상',
                       border: OutlineInputBorder(
@@ -178,30 +185,36 @@ class _SignupScreensState extends State<SignupScreens> {
                       filled: true,
                       fillColor: Colors.white,
                     ),
+                    obscureText: true,
                   ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 24),
-                child: const Text('영문 대소문자/숫자/특수문자 중 2가지 이상 조합, 8자~32자',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontFamily: "Roboto",
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFFC4C4C4)
-                ),),
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: const Text(
+                  '영문 대소문자/숫자/특수문자 중 2가지 이상 조합, 8자~32자',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontFamily: "Roboto",
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFFC4C4C4),
+                  ),
+                ),
               ),
 
-              const SizedBox(height: 50,),
+              const SizedBox(height: 50),
               Padding(
-                padding: const EdgeInsets.only(left: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: SizedBox(
                   width: 372,
                   height: 60,
                   child: TextFormField(
                     controller: confirmPasswordController,
-                    validator: (value) =>
-                      value == null || value.trim().isEmpty ? '비밀번호를 입력하세요' : null,
+                    validator:
+                        (value) =>
+                            value == null || value.trim().isEmpty
+                                ? '비밀번호를 입력하세요'
+                                : null,
                     decoration: InputDecoration(
                       hintText: '비밀번호 재확인',
                       border: OutlineInputBorder(
@@ -210,6 +223,7 @@ class _SignupScreensState extends State<SignupScreens> {
                       filled: true,
                       fillColor: Colors.white,
                     ),
+                    obscureText: true,
                   ),
                 ),
               ),
@@ -229,10 +243,7 @@ class _SignupScreensState extends State<SignupScreens> {
                     ),
                     child: const Text(
                       '다음',
-                      style: TextStyle(
-                        fontSize: 24,
-                        color: Color(0xFF1877DD),
-                      ),
+                      style: TextStyle(fontSize: 24, color: Color(0xFF1877DD)),
                     ),
                   ),
                 ),

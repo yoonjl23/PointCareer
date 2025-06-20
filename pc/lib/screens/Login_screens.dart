@@ -46,7 +46,7 @@ class _LoginScreensState extends State<LoginScreens> {
       print('✅ 로그인 성공: $id');
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => NavScreens(userId: id,)),
+        MaterialPageRoute(builder: (context) => NavScreens(userId: id)),
       );
     } else {
       print('❌ 로그인 실패');
@@ -60,25 +60,45 @@ class _LoginScreensState extends State<LoginScreens> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F2),
-      
+
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(height: 168),
+            const SizedBox(height: 100),
+            const Text(
+              '경기대생을 위한\n똑똑한 포인트 관리 & 채용정보 서비스',
+              style: TextStyle(
+                fontFamily: "Roboto",
+                fontWeight: FontWeight.w400,
+                fontSize: 18,
+                letterSpacing: 18 * -0.03,
+                color: Color(0xFF7B7B7B),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Padding(
-                  padding: EdgeInsets.only(left: 50),
-                  child: Image(image: AssetImage('assets/images/clouds.png'), width: 56, height: 56),
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: Image(
+                    image: AssetImage('assets/images/clouds.png'),
+                    width: 56,
+                    height: 56,
+                  ),
                 ),
                 const Text(
                   'PointCareer',
-                  style: TextStyle(fontSize: 40, fontFamily: 'Roboto', fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                    fontSize: 40,
+                    fontFamily: 'Roboto',
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 70),
 
             // 학번 입력
             SizedBox(
@@ -117,7 +137,7 @@ class _LoginScreensState extends State<LoginScreens> {
                 obscureText: true,
               ),
             ),
-            
+
             if (loginError != null)
               Padding(
                 padding: const EdgeInsets.only(left: 20.0, top: 8.0),
@@ -125,10 +145,7 @@ class _LoginScreensState extends State<LoginScreens> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     loginError!,
-                    style: const TextStyle(
-                      color: Colors.red,
-                      fontSize: 14,
-                    ),
+                    style: const TextStyle(color: Colors.red, fontSize: 14),
                   ),
                 ),
               ),
@@ -149,12 +166,16 @@ class _LoginScreensState extends State<LoginScreens> {
                 ),
                 child: const Text(
                   '로그인',
-                  style: TextStyle(fontSize: 18, color: Color(0xFFE2E2E2), fontFamily: 'Roboto'),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Color(0xFFE2E2E2),
+                    fontFamily: 'Roboto',
+                  ),
                 ),
               ),
             ),
 
-            const SizedBox(height: 10,),
+            const SizedBox(height: 10),
 
             SizedBox(
               width: 372,
@@ -163,7 +184,9 @@ class _LoginScreensState extends State<LoginScreens> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const SignupScreens()),
+                    MaterialPageRoute(
+                      builder: (context) => const SignupScreens(),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -184,8 +207,6 @@ class _LoginScreensState extends State<LoginScreens> {
               ),
             ),
 
-
-
             // 저장 및 회원가입
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -203,34 +224,15 @@ class _LoginScreensState extends State<LoginScreens> {
                     activeColor: const Color(0xFF517CF6),
                     title: const Text(
                       "Saved ID",
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400, fontFamily: 'Roboto'),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: 'Roboto',
+                      ),
                     ),
                   ),
                 ),
-                
               ],
-            ),
-
-            const SizedBox(height: 30),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: const Text(
-                  "-아이디는 학번입니다.",
-                  style: TextStyle(fontSize: 18, fontFamily: 'Roboto', color: Color(0xFF9D9D9D)),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: const Text(
-                  "-경기대학생분들의 KGU+ 포인트적립을\n도와드릴게요!",
-                  style: TextStyle(fontSize: 18, fontFamily: 'Roboto', color: Color(0xFF9D9D9D)),
-                ),
-              ),
             ),
           ],
         ),
@@ -238,7 +240,12 @@ class _LoginScreensState extends State<LoginScreens> {
     );
   }
 
-  Widget _buildInputField(TextEditingController controller, IconData icon, String label, bool obscure) {
+  Widget _buildInputField(
+    TextEditingController controller,
+    IconData icon,
+    String label,
+    bool obscure,
+  ) {
     return SizedBox(
       width: 372,
       height: 60,

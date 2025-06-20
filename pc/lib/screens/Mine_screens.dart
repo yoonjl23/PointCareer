@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pc/db/database_helper.dart';
+import 'package:pc/screens/Activity_detail_screens.dart';
 
 class MineScreens extends StatefulWidget {
   final String userId;
@@ -11,7 +12,50 @@ class MineScreens extends StatefulWidget {
 }
 
 class _MineScreensState extends State<MineScreens> {
-  List<bool> isStarredList = [true, false];
+  late List<bool> isStarredList;
+
+  final List<Map<String, String>> programs = [
+    {
+      'title': '[브라운백 시리즈] 오며가며 교양 토크쇼',
+      'imagePath': 'assets/images/targets.png',
+      'point': '10P',
+      'type': '온라인',
+      'duration': '2시간',
+      'field': '자기계발',
+      'category': '강연',
+      'date': '2025년 3월 30일',
+      'location': '수원 컨벤션 센터',
+    },
+    {
+      'title': '(지역사회문제 창의적해결방안 제안)',
+      'imagePath': 'assets/images/cat.jpg',
+      'point': '15P',
+      'type': '오프라인',
+      'duration': '3시간',
+      'field': '사회참여',
+      'category': '공모전',
+      'date': '2025년 3월 30일',
+      'location': '수원 컨벤션 센터',
+    },
+    {
+      'title': '[재맞고] 진로설계 포트폴리오 경진대회 청중평가단 모집',
+      'imagePath': 'assets/images/points.png',
+      'point': '5P',
+      'type': '온라인',
+      'duration': '1시간',
+      'field': '진로탐색',
+      'category': '봉사',
+      'date': '2025년 3월 30일',
+      'location': '수원 컨벤션 센터',
+    },
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    isStarredList = List.generate(programs.length, (_) => false);
+  }
+
   Future<Map<String, dynamic>?> fetchUserInfo() {
     return DatabaseHelper.instance.getUserById(widget.userId);
   }
@@ -81,58 +125,37 @@ class _MineScreensState extends State<MineScreens> {
 
                 const SizedBox(height: 40),
                 _buildSectionTitle('찜한 프로그램 / 공고'),
-
                 const SizedBox(height: 40),
                 _buildSectionTitle('저장된 KGU 프로그램'),
                 const SizedBox(height: 20),
                 _buildSearchField(),
-
                 const SizedBox(height: 30),
 
-                _buildSavedCard(
-                  index: 1,
-                  image: 'assets/images/points.png',
-                  title: '지역문제 창의적 해결방안 공모전',
-                  point: '20점',
-                  dDay: 'D - 4',
-                  hashtags: ['#관심산업', '#관심영역', '#관심분야'],
-                ),
-                const SizedBox(height: 16),
-                _buildSavedCard(
-                  index: 0,
-                  image: 'assets/images/targets.png',
-                  title: '오며가며 교양 토크쇼',
-                  point: '20점',
-                  dDay: 'D - 4',
-                  hashtags: ['#관심산업', '#관심영역', '#관심분야'],
-                ),
-                const SizedBox(height: 60),
+                /// 카드 반복 출력
+                ...List.generate(programs.length, (index) {
+                  final program = programs[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: _buildSavedCard(index: index, program: program),
+                  );
+                }),
 
+                const SizedBox(height: 60),
                 const SizedBox(height: 40),
-                _buildSectionTitle('저장된 추천 채용공고'),
+                _buildSectionTitle('저장된 추천채용공고'),
                 const SizedBox(height: 20),
                 _buildSearchField(),
-
                 const SizedBox(height: 30),
 
-                /// 찜한 카드 예시
-                _buildSavedCard(
-                  index: 0,
-                  image: 'assets/images/points.png',
-                  title: '지역문제 창의적 해결방안 공모전',
-                  point: '20점',
-                  dDay: 'D - 4',
-                  hashtags: ['#관심산업', '#관심영역', '#관심분야'],
-                ),
-                const SizedBox(height: 16),
-                _buildSavedCard(
-                  index: 1,
-                  image: 'assets/images/targets.png',
-                  title: '오며가며 교양 토크쇼',
-                  point: '20점',
-                  dDay: 'D - 4',
-                  hashtags: ['#관심산업', '#관심영역', '#관심분야'],
-                ),
+                /// 카드 반복 출력
+                ...List.generate(programs.length, (index) {
+                  final program = programs[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: _buildSavedCard(index: index, program: program),
+                  );
+                }),
+
                 const SizedBox(height: 60),
               ],
             ),
@@ -175,109 +198,130 @@ class _MineScreensState extends State<MineScreens> {
   /// 찜한 카드 위젯
   Widget _buildSavedCard({
     required int index,
-    required String image,
-    required String title,
-    required String point,
-    required String dDay,
-    required List<String> hashtags,
+    required Map<String, String> program,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder:
+                (_) => ActivityDetailScreens(
+                  userId: widget.userId,
+                  title: program['title'] ?? '',
+                  imagePath: program['imagePath'] ?? '',
+                  point: program['point'] ?? '',
+                  type: program['type'] ?? '',
+                  duration: program['duration'] ?? '',
+                  field: program['field'] ?? '',
+                  category: program['category'] ?? '',
+                  date: program['date'] ?? '',
+                  location: program['location'] ?? '',
+                ),
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          /// 뱃지 + 삭제 아이콘
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  _buildBadge(
-                    dDay,
-                    bg: const Color(0xFFDCE9FA),
-                    color: Color(0xFF2A6FB0),
-                  ),
-                  const SizedBox(width: 8),
-                  _buildBadge(
-                    '포인트 $point',
-                    bg: const Color(0xFFFFEEDB),
-                    color: Color(0xFFEA7500),
-                  ),
-                ],
-              ),
-              const Icon(Icons.close, color: Color(0xFF999999)),
-            ],
-          ),
-          const SizedBox(height: 12),
-
-          /// 이미지
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
-              image,
-              height: 120,
-              width: double.infinity,
-              fit: BoxFit.cover,
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 4,
+              offset: const Offset(0, 2),
             ),
-          ),
-          const SizedBox(height: 12),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// 뱃지 + 삭제 아이콘
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    _buildBadge(
+                      'D - 4',
+                      bg: const Color(0xFFDCE9FA),
+                      color: const Color(0xFF2A6FB0),
+                    ),
+                    const SizedBox(width: 8),
+                    _buildBadge(
+                      '포인트 ${program['point'] ?? ''}',
+                      bg: const Color(0xFFFFEEDB),
+                      color: const Color(0xFFEA7500),
+                    ),
+                  ],
+                ),
+                const Icon(Icons.close, color: Color(0xFF999999)),
+              ],
+            ),
+            const SizedBox(height: 12),
 
-          /// 제목
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
+            /// 이미지
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                program['imagePath'] ?? '',
+                height: 120,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            /// 제목 + 별
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    program['title'] ?? '',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              IconButton(
-                icon: Icon(
-                  isStarredList[index]
-                      ? Icons.star_rounded
-                      : Icons.star_border_rounded,
-                  color: isStarredList[index] ? Color(0xFF1877DD) : Colors.grey,
+                IconButton(
+                  icon: Icon(
+                    isStarredList[index]
+                        ? Icons.star_rounded
+                        : Icons.star_border_rounded,
+                    color:
+                        isStarredList[index]
+                            ? const Color(0xFF1877DD)
+                            : Colors.grey,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      isStarredList[index] = !isStarredList[index];
+                    });
+                  },
                 ),
-                onPressed: () {
-                  setState(() {
-                    isStarredList[index] = !isStarredList[index];
-                  });
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
+              ],
+            ),
+            const SizedBox(height: 8),
 
-          /// 해시태그
-          Wrap(
-            spacing: 6,
-            children:
-                hashtags
-                    .map(
-                      (tag) => Text(
-                        tag,
-                        style: const TextStyle(color: Colors.orange),
-                      ),
-                    )
-                    .toList(),
-          ),
-        ],
+            /// 해시태그 (하드코딩)
+            Wrap(
+              spacing: 6,
+              children:
+                  ['#관심산업', '#관심영역', '#관심분야']
+                      .map(
+                        (tag) => Text(
+                          tag,
+                          style: const TextStyle(color: Colors.orange),
+                        ),
+                      )
+                      .toList(),
+            ),
+          ],
+        ),
       ),
     );
   }

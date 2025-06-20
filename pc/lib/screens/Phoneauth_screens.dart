@@ -7,11 +7,7 @@ class PhoneauthScreens extends StatefulWidget {
   final String id;
   final String password;
 
-  const PhoneauthScreens({
-    super.key,
-    required this.id,
-    required this.password,
-  });
+  const PhoneauthScreens({super.key, required this.id, required this.password});
 
   @override
   State<PhoneauthScreens> createState() => _PhoneauthScreensState();
@@ -24,7 +20,10 @@ class _PhoneauthScreensState extends State<PhoneauthScreens> {
   String? codeError;
 
   Future<void> _completeSignup() async {
-    final result = await DatabaseHelper.instance.insertUser(widget.id, widget.password);
+    final result = await DatabaseHelper.instance.insertUser(
+      widget.id,
+      widget.password,
+    );
     if (result > 0) {
       print('✅ 회원가입 성공: ${widget.id}');
       Navigator.pushReplacement(
@@ -63,7 +62,7 @@ class _PhoneauthScreensState extends State<PhoneauthScreens> {
             ),
             const SizedBox(height: 30),
             const Text(
-              "가입을 위해 본인의\n휴대폰 번호를 인증해 주세요.",
+              "가입을 위해 본인의\n이메일을 인증해 주세요.",
               style: TextStyle(
                 fontFamily: 'Roboto',
                 fontWeight: FontWeight.w400,
@@ -77,18 +76,27 @@ class _PhoneauthScreensState extends State<PhoneauthScreens> {
               controller: phoneController,
               keyboardType: TextInputType.phone,
               decoration: InputDecoration(
-                labelText: '휴대폰 번호',
-                hintText: '01012345678',
+                hintText: '-',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
-                fillColor: const Color(0xFFE9E9E9),
+                fillColor: const Color(0xFFFFFFFF),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 100),
 
+            const Text(
+              '인증번호 코드 입력',
+              style: TextStyle(
+                fontFamily: "Roboto",
+                fontWeight: FontWeight.w600,
+                fontSize: 18,
+                color: Color(0xFF262626),
+              ),
+            ),
+            const SizedBox(height: 10),
             // 인증번호 입력
             if (codeSent)
               Column(
@@ -98,13 +106,12 @@ class _PhoneauthScreensState extends State<PhoneauthScreens> {
                     controller: codeController,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                      labelText: '인증번호 입력',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
-                      fillColor: const Color(0xFFE9E9E9),
+                      fillColor: const Color(0xFFFFFFFF),
                     ),
                   ),
                   if (codeError != null)
@@ -112,10 +119,7 @@ class _PhoneauthScreensState extends State<PhoneauthScreens> {
                       padding: const EdgeInsets.only(top: 8, left: 4),
                       child: Text(
                         codeError!,
-                        style: const TextStyle(
-                          color: Colors.red,
-                          fontSize: 13,
-                        ),
+                        style: const TextStyle(color: Colors.red, fontSize: 13),
                       ),
                     ),
                 ],
