@@ -95,7 +95,6 @@ class _PackageScreensState extends State<PackageScreens> {
   Widget build(BuildContext context) {
     final bool isJobPackage =
         widget.title.contains('진로') || widget.title.contains('취업');
-
     final dataList = isJobPackage ? jobs : programs;
 
     return Scaffold(
@@ -104,19 +103,16 @@ class _PackageScreensState extends State<PackageScreens> {
         backgroundColor: const Color(0xFFF2F2F2),
         elevation: 0,
         automaticallyImplyLeading: true,
-        title: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '맞춤형 추천',
-              style: TextStyle(
-                fontFamily: "Roboto",
-                fontWeight: FontWeight.w400,
-                fontSize: 20,
-                color: Color(0xFF7B7B7B),
-              ),
+        title: const Center(
+          child: Text(
+            '맞춤형 추천',
+            style: TextStyle(
+              fontFamily: "Roboto",
+              fontWeight: FontWeight.w400,
+              fontSize: 20,
+              color: Color(0xFF7B7B7B),
             ),
-          ],
+          ),
         ),
       ),
       body: Padding(
@@ -144,59 +140,26 @@ class _PackageScreensState extends State<PackageScreens> {
                 childAspectRatio: 0.7,
                 children:
                     dataList.map((program) {
+                      final imagePath = program['imagePath'] ?? '';
+                      final title = program['title'] ?? '';
+                      final field = program['field'] ?? '';
+                      final deadline = getDDay(program['deadline'] ?? '');
+                      final theme = program['theme'] ?? '';
+
                       return isJobPackage
                           ? buildProgramCards(
-                            title: program['title']!,
-                            imagePath: program['imagePath']!,
-                            field: program['field']!,
-                            deadline: getDDay(program['deadline'] ?? ''),
-                            theme: program['theme'] ?? '',
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (_) => ActivityDetailScreens(
-                                        userId: widget.userId,
-                                        title: program['title']!,
-                                        imagePath: program['imagePath']!,
-                                        point: program['point']!,
-                                        type: program['type']!,
-                                        duration: program['duration']!,
-                                        field: program['field']!,
-                                        category: program['category']!,
-                                        date: program['date'] ?? '날짜 추후 공지',
-                                        location:
-                                            program['location'] ?? '장소 추후 공지',
-                                      ),
-                                ),
-                              );
-                            },
+                            title: title,
+                            imagePath: imagePath,
+                            field: field,
+                            deadline: deadline,
+                            theme: theme,
+                            onTap: () => navigateToDetail(program),
                           )
                           : buildProgramCard(
-                            title: program['title']!,
-                            imagePath: program['imagePath']!,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (_) => ActivityDetailScreens(
-                                        userId: widget.userId,
-                                        title: program['title']!,
-                                        imagePath: program['imagePath']!,
-                                        point: program['point']!,
-                                        type: program['type']!,
-                                        duration: program['duration']!,
-                                        field: program['field']!,
-                                        category: program['category']!,
-                                        date: program['date'] ?? '날짜 추후 공지',
-                                        location:
-                                            program['location'] ?? '장소 추후 공지',
-                                      ),
-                                ),
-                              );
-                            },
+                            title: title,
+                            imagePath: imagePath,
+                            onTap: () => navigateToDetail(program),
+                            tags: [program['type'] ?? '', '2주이내', '포인트'],
                           );
                     }).toList(),
               ),
@@ -231,10 +194,32 @@ class _PackageScreensState extends State<PackageScreens> {
     );
   }
 
+  void navigateToDetail(Map<String, String> program) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (_) => ActivityDetailScreens(
+              userId: widget.userId,
+              title: program['title'] ?? '',
+              imagePath: program['imagePath'] ?? '',
+              point: program['point'] ?? '',
+              type: program['type'] ?? '',
+              duration: program['duration'] ?? '',
+              field: program['field'] ?? '',
+              category: program['category'] ?? '',
+              date: program['date'] ?? '날짜 추후 공지',
+              location: program['location'] ?? '장소 추후 공지',
+            ),
+      ),
+    );
+  }
+
   Widget buildProgramCard({
     required String title,
     required String imagePath,
     required VoidCallback onTap,
+    required List<String> tags,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -255,13 +240,15 @@ class _PackageScreensState extends State<PackageScreens> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              children: [
-                buildTag("온라인"),
-                const SizedBox(width: 4),
-                buildTag("2주이내"),
-                const SizedBox(width: 4),
-                buildTag("포인트", highlight: true),
-              ],
+              children:
+                  tags
+                      .map(
+                        (tag) => Padding(
+                          padding: const EdgeInsets.only(right: 2),
+                          child: buildTag(tag, highlight: tag.contains('포인트')),
+                        ),
+                      )
+                      .toList(),
             ),
             const SizedBox(height: 12),
             ClipRRect(
@@ -282,22 +269,6 @@ class _PackageScreensState extends State<PackageScreens> {
                 fontSize: 12,
                 color: Color(0xFF262626),
                 letterSpacing: -0.36,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFF1DB),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Text(
-                '관련 분야',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFFEA7500),
-                ),
               ),
             ),
           ],
@@ -380,7 +351,7 @@ class _PackageScreensState extends State<PackageScreens> {
             ),
             const SizedBox(height: 8),
             Text(
-              '\n$theme',
+              theme,
               style: const TextStyle(
                 fontFamily: 'Roboto',
                 fontWeight: FontWeight.w400,
@@ -389,6 +360,7 @@ class _PackageScreensState extends State<PackageScreens> {
                 color: Color(0xFF7B7B7B),
               ),
             ),
+            const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
@@ -442,10 +414,10 @@ class _PackageScreensState extends State<PackageScreens> {
 
         if (diff > 0) return 'D-$diff';
         if (diff == 0) return 'D-Day';
-        return '마감';
+        return 'D+${-diff}';
       }
       return '상시모집';
-    } catch (e) {
+    } catch (_) {
       return '날짜 오류';
     }
   }
