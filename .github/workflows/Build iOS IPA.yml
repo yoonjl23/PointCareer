@@ -1,14 +1,15 @@
 name: Build iOS IPA
 
 on:
-  workflow_dispatch:  # 수동 실행
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: macos-latest  # macOS 러너 사용
+    runs-on: macos-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Checkout source
+        uses: actions/checkout@v3
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -19,9 +20,9 @@ jobs:
         run: flutter pub get
 
       - name: Build IPA
-        run: flutter build ipa --no-codesign  # 서명 없이 빌드 (실제 기기 설치 불가)
+        run: flutter build ipa --no-codesign
 
-      - name: Upload artifact
+      - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
           name: ios-ipa
