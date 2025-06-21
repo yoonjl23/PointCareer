@@ -18,14 +18,12 @@ jobs:
 
       - name: Get dependencies
         run: flutter pub get
-        working-directory: ${{ github.workspace }}/PointCareer
 
       - name: Build IPA
         run: flutter build ipa --no-codesign
-        working-directory: ${{ github.workspace }}/PointCareer
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
           name: ios-ipa
-          path: PointCareer/build/ios/ipa/*.ipa
+          path: build/ios/ipa/*.ipa
