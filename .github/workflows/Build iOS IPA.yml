@@ -22,7 +22,7 @@ jobs:
         run: flutter build ipa --no-codesign  # 서명 없이 빌드 (실제 기기 설치 불가)
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ios-ipa
           path: build/ios/ipa/*.ipa
