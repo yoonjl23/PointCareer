@@ -182,14 +182,14 @@ class _JobListScreensState extends State<JobListScreens> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (_) => NavScreens(userId: widget.userId)),
+                  builder: (_) => NavScreens(token: widget.userId)),
             );
           } else if (index == 1) {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                   builder: (_) =>
-                      NavScreens(userId: widget.userId, initialIndex: index)),
+                      NavScreens(token: widget.userId, initialIndex: index)),
             );
           }
         },

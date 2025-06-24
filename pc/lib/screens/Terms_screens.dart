@@ -141,7 +141,7 @@ class _TermsScreensState extends State<TermsScreens> {
             ),
 
             _buildCheckRow(
-              label: '개인정보 수집 및 이용 동의(필수수)',
+              label: '개인정보 수집 및 이용 동의(필수)',
               value: priaccyAgree,
               onChanged: (val) {
                 setState(() {
@@ -154,7 +154,7 @@ class _TermsScreensState extends State<TermsScreens> {
             ),
 
             _buildCheckRow(
-              label: '(선택) 이벤트 정보 알림 수신 동의',
+              label: '이벤트 정보 알림 수신 동의 (선택)',
               value: marketingAgree,
               onChanged: (val) {
                 setState(() {

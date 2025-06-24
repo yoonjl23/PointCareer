@@ -175,7 +175,7 @@ class _PackageScreensState extends State<PackageScreens> {
             context,
             MaterialPageRoute(
               builder:
-                  (_) => NavScreens(userId: widget.userId, initialIndex: index),
+                  (_) => NavScreens(token: widget.userId, initialIndex: index),
             ),
           );
         },

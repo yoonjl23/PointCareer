@@ -187,7 +187,7 @@ class _ActivityDetailScreensState extends State<ActivityDetailScreens> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (_) => NavScreens(userId: widget.userId, initialIndex: index),
+              builder: (_) => NavScreens(token: widget.userId, initialIndex: index),
             ),
           );
         },

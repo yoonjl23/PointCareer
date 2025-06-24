@@ -1,8 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:pc/screens/Nav_Screens.dart';
 import 'package:pc/screens/Signup_screens.dart';
-import 'package:pc/db/database_helper.dart';
-import 'Mine_screens.dart';
 
 class LoginScreens extends StatefulWidget {
   const LoginScreens({super.key});
@@ -17,16 +17,13 @@ class _LoginScreensState extends State<LoginScreens> {
   bool saveId = false;
   String? loginError;
 
-  void _login() async {
+  Future<void> _login() async {
     setState(() {
       loginError = null;
     });
 
     final id = studentIdController.text.trim();
     final password = passwordController.text.trim();
-
-    print('🧪 입력된 ID: $id');
-    print('🧪 입력된 PW: $password');
 
     if (id.isEmpty || password.isEmpty) {
       setState(() {
@@ -35,23 +32,45 @@ class _LoginScreensState extends State<LoginScreens> {
       return;
     }
 
-    final db = DatabaseHelper.instance;
+    final url = Uri.parse('http://43.201.74.44/api/v1/auth/login');
 
-    // 디버깅용 전체 사용자 출력
-    await db.debugPrintAllUsers();
+    try {
+      print('📡 로그인 요청 시작');
+      print('➡️ 입력된 ID: $id');
+      print('➡️ 입력된 PW: $password');
 
-    bool success = await db.verifyUser(id, password);
-
-    if (success) {
-      print('✅ 로그인 성공: $id');
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => NavScreens(userId: id)),
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'loginId': id,
+          'password': password,
+        }),
       );
-    } else {
-      print('❌ 로그인 실패');
+
+      print('📥 응답 상태 코드: ${response.statusCode}');
+      print('📥 응답 본문: ${response.body}');
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200 && data['status'] == 'success') {
+        final userId = data['result']['user_id'].toString(); // ✅ user_id 추출
+        print('✅ 로그인 성공 - userId: $userId');
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => NavScreens(token: userId)),
+        );
+      } else {
+        setState(() {
+          loginError = data['message'] ?? '아이디 또는 비밀번호가 잘못되었습니다.';
+        });
+        print('❌ 로그인 실패: ${data['message']}');
+      }
+    } catch (e) {
+      print('❌ 예외 발생: $e');
       setState(() {
-        loginError = '아이디 또는 비밀번호가 잘못되었습니다.';
+        loginError = '서버 오류: 네트워크를 확인하세요.';
       });
     }
   }
@@ -60,7 +79,6 @@ class _LoginScreensState extends State<LoginScreens> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F2),
-
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -79,8 +97,8 @@ class _LoginScreensState extends State<LoginScreens> {
             const SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Padding(
+              children: const [
+                Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10),
                   child: Image(
                     image: AssetImage('assets/images/clouds.png'),
@@ -88,7 +106,7 @@ class _LoginScreensState extends State<LoginScreens> {
                     height: 56,
                   ),
                 ),
-                const Text(
+                Text(
                   'PointCareer',
                   style: TextStyle(
                     fontSize: 40,
@@ -100,41 +118,39 @@ class _LoginScreensState extends State<LoginScreens> {
             ),
             const SizedBox(height: 70),
 
-            // 학번 입력
+            // ID 입력
             SizedBox(
               width: 372,
               height: 60,
               child: TextFormField(
                 controller: studentIdController,
                 decoration: InputDecoration(
-                  hintText: 'sample@gmail.com',
+                  hintText: 'sample@kgu.ac.kr',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                   filled: true,
                   fillColor: Colors.white,
                 ),
-                obscureText: false,
               ),
             ),
-
             const SizedBox(height: 10),
 
-            // 비밀번호 입력
+            // PW 입력
             SizedBox(
               width: 372,
               height: 60,
               child: TextFormField(
                 controller: passwordController,
+                obscureText: true,
                 decoration: InputDecoration(
-                  hintText: '영문, 숫자, 특수문자 포함 8자 이상',
+                  hintText: '비밀번호를 입력하세요',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                   filled: true,
                   fillColor: Colors.white,
                 ),
-                obscureText: true,
               ),
             ),
 
@@ -177,6 +193,7 @@ class _LoginScreensState extends State<LoginScreens> {
 
             const SizedBox(height: 10),
 
+            // 회원가입 버튼
             SizedBox(
               width: 372,
               height: 60,
@@ -207,7 +224,7 @@ class _LoginScreensState extends State<LoginScreens> {
               ),
             ),
 
-            // 저장 및 회원가입
+            // 저장 ID 체크박스
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -235,40 +252,6 @@ class _LoginScreensState extends State<LoginScreens> {
               ],
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInputField(
-    TextEditingController controller,
-    IconData icon,
-    String label,
-    bool obscure,
-  ) {
-    return SizedBox(
-      width: 372,
-      height: 60,
-      child: Container(
-        decoration: BoxDecoration(
-          color: const Color(0xFFE9E9E9),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: TextField(
-          controller: controller,
-          obscureText: obscure,
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            prefixIcon: Icon(icon),
-            labelText: label,
-            labelStyle: const TextStyle(
-              fontSize: 20,
-              fontFamily: 'Roboto',
-              fontWeight: FontWeight.w400,
-              color: Color(0xFF262626),
-            ),
-          ),
         ),
       ),
     );

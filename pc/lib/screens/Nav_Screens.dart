@@ -3,10 +3,10 @@ import 'package:pc/screens/Home_screens.dart';
 import 'package:pc/screens/Mine_screens.dart';
 
 class NavScreens extends StatefulWidget {
-  final String userId;
+  final String token; // 변경됨
   final int initialIndex;
 
-  const NavScreens({super.key, required this.userId, this.initialIndex = 0});
+  const NavScreens({super.key, required this.token, this.initialIndex = 0});
 
   @override
   State<NavScreens> createState() => _NavScreensState();
@@ -15,14 +15,15 @@ class NavScreens extends StatefulWidget {
 class _NavScreensState extends State<NavScreens> {
   late int _selectedIndex;
 
+  @override
   void initState() {
     super.initState();
     _selectedIndex = widget.initialIndex;
   }
 
   List<Widget> get _screens => [
-        HomeScreens(userId: widget.userId,),
-        MineScreens(userId: widget.userId), // ✅ widget.userId 사용
+        HomeScreens(token: widget.token),
+        MineScreens(userId: widget.token),
       ];
 
   void _onItemTapped(int index) {
@@ -51,7 +52,7 @@ class _NavScreensState extends State<NavScreens> {
       backgroundColor: const Color(0xFFF2F2F2),
       body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color(0xFFF2F2F2),
+        backgroundColor: const Color(0xFFF2F2F2),
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         selectedFontSize: 0,

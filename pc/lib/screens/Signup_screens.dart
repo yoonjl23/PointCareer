@@ -10,6 +10,7 @@ class SignupScreens extends StatefulWidget {
 }
 
 class _SignupScreensState extends State<SignupScreens> {
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController idController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
@@ -19,6 +20,7 @@ class _SignupScreensState extends State<SignupScreens> {
   final _formKey = GlobalKey<FormState>();
 
   void _goToTermsPage() {
+    final name = nameController.text.trim();
     final id = idController.text.trim();
     final password = passwordController.text.trim();
     final confirmPassword = confirmPasswordController.text.trim();
@@ -27,87 +29,39 @@ class _SignupScreensState extends State<SignupScreens> {
       passwordError = null;
     });
 
+    // 🔍 디버깅용 출력
+    print('🧪 입력한 비밀번호: $password');
+    print('🧪 비밀번호 확인: $confirmPassword');
+
     if (_formKey.currentState!.validate()) {
       if (password != confirmPassword) {
         setState(() {
           passwordError = '비밀번호가 일치하지 않습니다.';
         });
+        print('❌ 비밀번호 불일치');
         return;
       }
 
-      // 약관 화면으로 이동, 동의 시 인증 화면으로 이동
+      print('✅ 비밀번호 일치');
+
+      // 약관 화면 → 동의하면 인증 화면으로 이동
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder:
-              (context) => TermsScreens(
-                onAgree: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) =>
-                              PhoneauthScreens(id: id, password: password),
-                    ),
-                  );
-                },
-              ),
+          builder: (context) => TermsScreens(
+            onAgree: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      PhoneauthScreens(id: id, password: password, name: name,),
+                ),
+              );
+            },
+          ),
         ),
       );
     }
-  }
-
-  Widget _buildLabel(String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 19, vertical: 5),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w400,
-          fontFamily: 'Roboto',
-          color: Color(0xFF262626),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required String label,
-    required TextEditingController controller,
-    bool obscure = false,
-    String? errorText,
-    required String? Function(String?) validator,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
-      child: SizedBox(
-        width: 372,
-        height: errorText == null ? 60 : 80,
-        child: TextFormField(
-          controller: controller,
-          obscureText: obscure,
-          validator: validator,
-          decoration: InputDecoration(
-            labelText: label,
-            filled: true,
-            fillColor: const Color(0xFFE9E9E9),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
-            ),
-            labelStyle: const TextStyle(
-              fontSize: 20,
-              fontFamily: 'Roboto',
-              fontWeight: FontWeight.w400,
-              color: Color(0xFF262626),
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 30),
-            errorText: errorText,
-          ),
-        ),
-      ),
-    );
   }
 
   @override
@@ -119,7 +73,6 @@ class _SignupScreensState extends State<SignupScreens> {
         elevation: 0,
       ),
       backgroundColor: const Color(0xFFF2F2F2),
-
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 30),
         child: Form(
@@ -142,20 +95,19 @@ class _SignupScreensState extends State<SignupScreens> {
               ),
               const SizedBox(height: 50),
 
+              // 이름 입력
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: SizedBox(
                   width: 372,
                   height: 60,
                   child: TextFormField(
-                    controller: idController,
-                    validator:
-                        (value) =>
-                            value == null || value.trim().isEmpty
-                                ? '이메일을 입력하세요'
-                                : null,
+                    controller: nameController,
+                    validator: (value) => value == null || value.trim().isEmpty
+                        ? '이름을 입력하세요'
+                        : null,
                     decoration: InputDecoration(
-                      hintText: 'kyonggi@ac.kr',
+                      hintText: '김경기',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -165,6 +117,31 @@ class _SignupScreensState extends State<SignupScreens> {
                   ),
                 ),
               ),
+
+              // 아이디 입력
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: SizedBox(
+                  width: 372,
+                  height: 60,
+                  child: TextFormField(
+                    controller: idController,
+                    validator: (value) => value == null || value.trim().isEmpty
+                        ? '아이디를 입력하세요'
+                        : null,
+                    decoration: InputDecoration(
+                      hintText: 'kyonggi',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+
+              // 비밀번호 입력
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: SizedBox(
@@ -172,11 +149,9 @@ class _SignupScreensState extends State<SignupScreens> {
                   height: 60,
                   child: TextFormField(
                     controller: passwordController,
-                    validator:
-                        (value) =>
-                            value == null || value.trim().isEmpty
-                                ? '비밀번호를 입력하세요'
-                                : null,
+                    validator: (value) => value == null || value.trim().isEmpty
+                        ? '비밀번호를 입력하세요'
+                        : null,
                     decoration: InputDecoration(
                       hintText: '영문, 숫자, 특수문자 포함 8자 이상',
                       border: OutlineInputBorder(
@@ -203,6 +178,8 @@ class _SignupScreensState extends State<SignupScreens> {
               ),
 
               const SizedBox(height: 50),
+
+              // 비밀번호 확인 입력
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: SizedBox(
@@ -210,11 +187,9 @@ class _SignupScreensState extends State<SignupScreens> {
                   height: 60,
                   child: TextFormField(
                     controller: confirmPasswordController,
-                    validator:
-                        (value) =>
-                            value == null || value.trim().isEmpty
-                                ? '비밀번호를 입력하세요'
-                                : null,
+                    validator: (value) => value == null || value.trim().isEmpty
+                        ? '비밀번호를 입력하세요'
+                        : null,
                     decoration: InputDecoration(
                       hintText: '비밀번호 재확인',
                       border: OutlineInputBorder(
@@ -227,7 +202,19 @@ class _SignupScreensState extends State<SignupScreens> {
                   ),
                 ),
               ),
+
+              if (passwordError != null)
+                Padding(
+                  padding: const EdgeInsets.only(left: 25.0, top: 5),
+                  child: Text(
+                    passwordError!,
+                    style: const TextStyle(color: Colors.red, fontSize: 14),
+                  ),
+                ),
+
               const SizedBox(height: 150),
+
+              // 다음 버튼
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: SizedBox(
@@ -236,7 +223,7 @@ class _SignupScreensState extends State<SignupScreens> {
                   child: ElevatedButton(
                     onPressed: _goToTermsPage,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFFBBDFFF),
+                      backgroundColor: const Color(0xFFBBDFFF),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),

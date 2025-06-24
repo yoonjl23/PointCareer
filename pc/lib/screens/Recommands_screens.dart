@@ -86,7 +86,7 @@ class _RecommandsScreensState extends State<RecommandsScreens> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (_) => NavScreens(userId: widget.userId),
+                builder: (_) => NavScreens(token: widget.userId),
               ),
             );
           } else if (index == 1) {
@@ -95,7 +95,7 @@ class _RecommandsScreensState extends State<RecommandsScreens> {
               MaterialPageRoute(
                 builder:
                     (_) =>
-                        NavScreens(userId: widget.userId, initialIndex: index),
+                        NavScreens(token: widget.userId, initialIndex: index),
               ),
             );
           }

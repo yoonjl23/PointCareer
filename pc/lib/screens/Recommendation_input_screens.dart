@@ -208,12 +208,12 @@ class _RecommendationInputScreensState extends State<RecommendationInputScreens>
           if (index == 0) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (_) => NavScreens(userId: widget.userId)),
+              MaterialPageRoute(builder: (_) => NavScreens(token: widget.userId)),
             );
           } else if (index == 1) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (_) => NavScreens(userId: widget.userId, initialIndex: index,)),
+              MaterialPageRoute(builder: (_) => NavScreens(token: widget.userId, initialIndex: index,)),
             );
           }
         },
