@@ -29,22 +29,18 @@ class _CompleteScreensState extends State<CompleteScreens> {
         child: Center(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: 
-            [
-              const SizedBox(height: 168,),
+            children: [
+              const SizedBox(height: 168),
               const Text(
                 '회원가입 완료!',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               const Text(
                 '나에게 맞는 활동부터 추천 채용정보까지\n포인커리어에서 모두 확인하세요',
                 style: TextStyle(fontSize: 16),
               ),
-              const SizedBox(height: 66,),
+              const SizedBox(height: 66),
               Padding(
                 padding: const EdgeInsets.only(left: 69),
                 child: Image(
@@ -53,30 +49,35 @@ class _CompleteScreensState extends State<CompleteScreens> {
                   height: 273,
                 ),
               ),
-              const SizedBox(height: 105,),
+              const SizedBox(height: 105),
               SizedBox(
                 width: 372,
                 height: 60,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginScreens()),
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LoginScreens()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFBBDFFF),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(0)
-                    )
+                      borderRadius: BorderRadius.circular(0),
+                    ),
                   ),
-                  child: const Text('시작하기', style: TextStyle(
-                    fontFamily: "Roboto",
-                    fontWeight: FontWeight.w400,
-                    fontSize: 20,
-                    color: Color(0xFF1877DD),
-                  ),)),
-              )
+                  child: const Text(
+                    '시작하기',
+                    style: TextStyle(
+                      fontFamily: "Roboto",
+                      fontWeight: FontWeight.w400,
+                      fontSize: 20,
+                      color: Color(0xFF1877DD),
+                    ),
+                  ),
+                ),
+              ),
             ],
-            
           ),
         ),
       ),

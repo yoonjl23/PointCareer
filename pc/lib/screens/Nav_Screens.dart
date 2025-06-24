@@ -4,9 +4,15 @@ import 'package:pc/screens/Mine_screens.dart';
 
 class NavScreens extends StatefulWidget {
   final String token; // 변경됨
+  final String userId;
   final int initialIndex;
 
-  const NavScreens({super.key, required this.token, this.initialIndex = 0});
+  const NavScreens({
+    super.key,
+    required this.token,
+    required this.userId,
+    this.initialIndex = 0,
+  });
 
   @override
   State<NavScreens> createState() => _NavScreensState();
@@ -19,12 +25,14 @@ class _NavScreensState extends State<NavScreens> {
   void initState() {
     super.initState();
     _selectedIndex = widget.initialIndex;
+
+    print('✅ NavScreens 진입, userId: ${widget.userId}');
   }
 
   List<Widget> get _screens => [
-        HomeScreens(token: widget.token),
-        MineScreens(userId: widget.token),
-      ];
+    HomeScreens(token: widget.token),
+    MyPageScreen(userId: widget.userId, token: widget.token),
+  ];
 
   void _onItemTapped(int index) {
     setState(() {

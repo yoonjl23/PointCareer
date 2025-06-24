@@ -18,6 +18,7 @@ class HomeScreens extends StatefulWidget {
 class _HomeScreensState extends State<HomeScreens> {
   String userName = '';
   String loginId = '';
+  int? usedId;
 
   @override
   void initState() {
@@ -27,10 +28,13 @@ class _HomeScreensState extends State<HomeScreens> {
 
   Future<void> loadUserInfo() async {
     final userInfo = await fetchUserInfo(widget.token);
+    print('🧪 사용자 정보: $userInfo');
+
     if (userInfo != null) {
       setState(() {
         loginId = userInfo['login_id'] ?? '';
-        userName = userInfo['user_name'] ?? '';
+        userName = userInfo['user_name'] ?? ''; // 여기서 null이거나 ''일 수 있음
+        usedId = userInfo['user_id'];
       });
     }
   }
@@ -40,17 +44,18 @@ class _HomeScreensState extends State<HomeScreens> {
 
     final response = await http.get(
       url,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Accept': 'application/json',
-      },
+      headers: {'Authorization': '$token', 'Accept': 'application/json'},
     );
 
-    if (response.statusCode == 200) {
+    print('📥 사용자 조회 응답 코드: ${response.statusCode}');
+    print('📥 사용자 조회 응답 본문: ${response.body}');
+
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
       final data = jsonDecode(response.body);
-      return data['result'];
+      return data['result']; // ✅ 여기엔 login_id, user_name만 있음
+    } else {
+      print('❌ 사용자 정보 응답 실패 또는 본문 없음');
     }
-    return null;
   }
 
   @override
@@ -94,7 +99,12 @@ class _HomeScreensState extends State<HomeScreens> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => RecommendationInputScreens(userId: loginId),
+                      builder:
+                          (context) => RecommendationInputScreens(
+                            userId: usedId.toString() ?? '',
+                            token: widget.token,
+                            userName: userName,
+                          ),
                     ),
                   );
                 },
@@ -107,7 +117,11 @@ class _HomeScreensState extends State<HomeScreens> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ActivityListScreens(userId: loginId),
+                      builder:
+                          (context) => ActivityListScreens(
+                            userId: loginId,
+                            token: widget.token,
+                          ),
                     ),
                   );
                 },
@@ -120,7 +134,11 @@ class _HomeScreensState extends State<HomeScreens> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => JobListScreens(userId: loginId),
+                      builder:
+                          (context) => JobListScreens(
+                            userId: loginId,
+                            token: widget.token,
+                          ),
                     ),
                   );
                 },

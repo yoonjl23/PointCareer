@@ -42,24 +42,38 @@ class _LoginScreensState extends State<LoginScreens> {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'loginId': id,
-          'password': password,
-        }),
+        body: jsonEncode({'loginId': id, 'password': password}),
       );
 
       print('📥 응답 상태 코드: ${response.statusCode}');
       print('📥 응답 본문: ${response.body}');
 
       final data = jsonDecode(response.body);
+      final headers = response.headers;
 
       if (response.statusCode == 200 && data['status'] == 'success') {
-        final userId = data['result']['user_id'].toString(); // ✅ user_id 추출
-        print('✅ 로그인 성공 - userId: $userId');
+        final userId = data['result']['user_id'].toString();
+        final accessToken = headers['authorization']; // 소문자로 자동 변환됨
+        final refreshToken = headers['authorization_refresh'];
 
+        print('✅ 로그인 성공 - userId: $userId');
+        print('🔐 accessToken: $accessToken');
+        print('🔄 refreshToken: $refreshToken');
+
+        if (accessToken == null || refreshToken == null) {
+          setState(() {
+            loginError = '서버에서 토큰을 받지 못했습니다.';
+          });
+          return;
+        }
+
+        // 다음 화면으로 이동
+        print('🧪 넘기는 userId: $userId');
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => NavScreens(token: userId)),
+          MaterialPageRoute(
+            builder: (_) => NavScreens(token: accessToken, userId: userId),
+          ),
         );
       } else {
         setState(() {

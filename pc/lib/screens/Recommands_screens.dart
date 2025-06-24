@@ -4,14 +4,34 @@ import 'package:pc/screens/Nav_Screens.dart';
 
 class RecommandsScreens extends StatefulWidget {
   final String userId;
+  final String token;
+  final int point;
+  final String deadline;
+  final List<String> interests;
 
-  const RecommandsScreens({super.key, required this.userId});
+  const RecommandsScreens({
+    super.key,
+    required this.userId,
+    required this.token,
+    required this.point,
+    required this.deadline,
+    required this.interests,
+  });
 
   @override
   State<RecommandsScreens> createState() => _RecommandsScreensState();
 }
 
 class _RecommandsScreensState extends State<RecommandsScreens> {
+  @override
+  void initState() {
+    super.initState();
+    print('📌 입력 받은 point: ${widget.point}');
+    print('📌 입력 받은 deadline: ${widget.deadline}');
+    print('📌 입력 받은 관심 분야: ${widget.interests}');
+    // TODO: 이곳에서 API 호출
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,19 +40,16 @@ class _RecommandsScreensState extends State<RecommandsScreens> {
         backgroundColor: const Color(0xFFF2F2F2),
         elevation: 0,
         automaticallyImplyLeading: true,
-        title: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '맞춤형 추천',
-              style: TextStyle(
-                fontFamily: "Roboto",
-                fontWeight: FontWeight.w400,
-                fontSize: 20,
-                color: Color(0xFF7B7B7B),
-              ),
+        title: const Center(
+          child: Text(
+            '맞춤형 추천',
+            style: TextStyle(
+              fontFamily: "Roboto",
+              fontWeight: FontWeight.w400,
+              fontSize: 20,
+              color: Color(0xFF7B7B7B),
             ),
-          ],
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -43,34 +60,16 @@ class _RecommandsScreensState extends State<RecommandsScreens> {
             const SizedBox(height: 50),
             const Text(
               '맞춤 경로가 준비되었어요!',
-              style: TextStyle(
-                fontFamily: "Roboto",
-                fontWeight: FontWeight.w600,
-                fontSize: 24,
-                color: Color(0xFF262626),
-              ),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 7),
-            const Text(
-              '가장 효율적인 활동을 추천해드려요',
-              style: TextStyle(
-                fontFamily: "Roboto",
-                fontWeight: FontWeight.w400,
-                fontSize: 18,
-                color: Color(0xFF262626),
-              ),
-            ),
+            const Text('가장 효율적인 활동을 추천해드려요', style: TextStyle(fontSize: 18)),
             const SizedBox(height: 30),
-
-            // 패키지 카드 1
             buildPackageSection(
               title: '진로 / 취업에 도움되는 패키지',
               userId: widget.userId,
             ),
-
             const SizedBox(height: 30),
-
-            // 패키지 카드 2
             buildPackageSection(
               title: '시간효율 높은 포인트 집중 패키지',
               userId: widget.userId,
@@ -79,32 +78,26 @@ class _RecommandsScreensState extends State<RecommandsScreens> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color(0xFFF2F2F2),
+        backgroundColor: const Color(0xFFF2F2F2),
         currentIndex: 1,
-        onTap: (index) {
-          if (index == 0) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (_) => NavScreens(token: widget.userId),
-              ),
-            );
-          } else if (index == 1) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder:
-                    (_) =>
-                        NavScreens(token: widget.userId, initialIndex: index),
-              ),
-            );
-          }
-        },
         showSelectedLabels: false,
         showUnselectedLabels: false,
-        selectedItemColor: Color(0xFF7B7B7B),
-        unselectedItemColor: Color(0xFF7B7B7B),
-        items: [
+        selectedItemColor: const Color(0xFF7B7B7B),
+        unselectedItemColor: const Color(0xFF7B7B7B),
+        onTap: (index) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (_) => NavScreens(
+                    token: widget.token,
+                    userId: widget.userId,
+                    initialIndex: index,
+                  ),
+            ),
+          );
+        },
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: '홈'),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
@@ -138,16 +131,9 @@ class _RecommandsScreensState extends State<RecommandsScreens> {
           children: [
             Text(
               title,
-              style: const TextStyle(
-                fontFamily: "Roboto",
-                fontWeight: FontWeight.w600,
-                fontSize: 18,
-                color: Color(0xFF262626),
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 16),
-
-            // 가로 스크롤 이미지 리스트
             SizedBox(
               height: 100,
               child: ListView.builder(
@@ -166,10 +152,7 @@ class _RecommandsScreensState extends State<RecommandsScreens> {
                 },
               ),
             ),
-
             const SizedBox(height: 16),
-
-            // 태그
             Wrap(
               spacing: 8,
               children:
@@ -187,9 +170,7 @@ class _RecommandsScreensState extends State<RecommandsScreens> {
                         tag,
                         style: const TextStyle(
                           fontSize: 12,
-                          fontWeight: FontWeight.w400,
                           color: Color(0xFFEA7500),
-                          fontFamily: "Roboto",
                         ),
                       ),
                     );

@@ -140,13 +140,14 @@ class _PhoneauthScreensState extends State<PhoneauthScreens> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => ProfilesetupScreens(
-          name: widget.name,
-          email: emailController.text.trim(),
-          loginId: emailController.text.trim(),
-          password: widget.password,
-          confirmPassword: widget.password,
-        ),
+        builder:
+            (context) => ProfilesetupScreens(
+              name: widget.name,
+              email: emailController.text.trim(),
+              loginId: emailController.text.trim(),
+              password: widget.password,
+              confirmPassword: widget.password,
+            ),
       ),
     );
   }
@@ -155,11 +156,7 @@ class _PhoneauthScreensState extends State<PhoneauthScreens> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F2),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF2F2F2),
-        elevation: 0,
-        automaticallyImplyLeading: true,
-      ),
+      appBar: AppBar(backgroundColor: const Color(0xFFF2F2F2)),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -177,10 +174,7 @@ class _PhoneauthScreensState extends State<PhoneauthScreens> {
             const SizedBox(height: 30),
             const Text(
               "가입을 위해 본인의\n이메일을 인증해 주세요.",
-              style: TextStyle(
-                fontSize: 18,
-                fontFamily: 'Roboto',
-              ),
+              style: TextStyle(fontSize: 18, fontFamily: 'Roboto'),
             ),
             const SizedBox(height: 40),
 
@@ -237,15 +231,16 @@ class _PhoneauthScreensState extends State<PhoneauthScreens> {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: isLoading
-                    ? null
-                    : () async {
-                        if (!codeSent) {
-                          await _requestCode();
-                        } else {
-                          await _verifyCode();
-                        }
-                      },
+                onPressed:
+                    isLoading
+                        ? null
+                        : () async {
+                          if (!codeSent) {
+                            await _requestCode();
+                          } else {
+                            await _verifyCode();
+                          }
+                        },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.black,
@@ -253,9 +248,10 @@ class _PhoneauthScreensState extends State<PhoneauthScreens> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: isLoading
-                    ? const CircularProgressIndicator()
-                    : Text(codeSent ? '인증 완료' : '인증 요청'),
+                child:
+                    isLoading
+                        ? const CircularProgressIndicator()
+                        : Text(codeSent ? '인증 완료' : '인증 요청'),
               ),
             ),
           ],

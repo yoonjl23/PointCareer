@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pc/screens/Activity_detail_screens.dart';
+
 import 'package:pc/screens/Nav_Screens.dart';
+import 'package:pc/screens/Recruit_Detail_Screens.dart';
+import 'package:pc/screens/job_list_screens.dart';
 
 class PackageScreens extends StatefulWidget {
   final String title;
@@ -175,7 +177,11 @@ class _PackageScreensState extends State<PackageScreens> {
             context,
             MaterialPageRoute(
               builder:
-                  (_) => NavScreens(token: widget.userId, initialIndex: index),
+                  (_) => NavScreens(
+                    token: widget.userId,
+                    userId: widget.userId,
+                    initialIndex: index,
+                  ),
             ),
           );
         },
@@ -199,17 +205,10 @@ class _PackageScreensState extends State<PackageScreens> {
       context,
       MaterialPageRoute(
         builder:
-            (_) => ActivityDetailScreens(
+            (_) => RecruitDetailScreens(
               userId: widget.userId,
-              title: program['title'] ?? '',
-              imagePath: program['imagePath'] ?? '',
-              point: program['point'] ?? '',
-              type: program['type'] ?? '',
-              duration: program['duration'] ?? '',
-              field: program['field'] ?? '',
-              category: program['category'] ?? '',
-              date: program['date'] ?? '날짜 추후 공지',
-              location: program['location'] ?? '장소 추후 공지',
+              token: widget.title,
+              recruitId: 1,
             ),
       ),
     );

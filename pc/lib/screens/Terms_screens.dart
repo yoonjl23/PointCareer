@@ -46,16 +46,17 @@ class _TermsScreensState extends State<TermsScreens> {
   void _showTermsDialog(String title, String content) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text(title),
-        content: SingleChildScrollView(child: Text(content)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('닫기'),
+      builder:
+          (_) => AlertDialog(
+            title: Text(title),
+            content: SingleChildScrollView(child: Text(content)),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('닫기'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
