@@ -8,8 +8,9 @@ import 'package:pc/screens/job_list_screens.dart';
 
 class HomeScreens extends StatefulWidget {
   final String token;
+  final String userId;
 
-  const HomeScreens({super.key, required this.token});
+  const HomeScreens({super.key, required this.token, required this.userId});
 
   @override
   State<HomeScreens> createState() => _HomeScreensState();
@@ -119,7 +120,7 @@ class _HomeScreensState extends State<HomeScreens> {
                     MaterialPageRoute(
                       builder:
                           (context) => ActivityListScreens(
-                            userId: loginId,
+                            userId: widget.userId,
                             token: widget.token,
                           ),
                     ),
@@ -136,7 +137,7 @@ class _HomeScreensState extends State<HomeScreens> {
                     MaterialPageRoute(
                       builder:
                           (context) => JobListScreens(
-                            userId: loginId,
+                            userId: widget.userId,
                             token: widget.token,
                           ),
                     ),
