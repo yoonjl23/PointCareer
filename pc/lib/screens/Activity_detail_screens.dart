@@ -74,44 +74,52 @@ class _ActivityDetailScreensState extends State<ActivityDetailScreens> {
   }
 
   Future<void> toggleBookmark() async {
-    final url = Uri.parse('http://43.201.74.44/api/v1/bookmarks');
-    final body = jsonEncode({'id': widget.pointId, 'target_type': 'POINT'});
+  final url = Uri.parse('http://43.201.74.44/api/v1/bookmarks');
+  final body = jsonEncode({'id': widget.pointId, 'target_type': 'POINT'});
 
-    try {
-      print('📤 북마크 생성 요청 바디: $body');
-      final response = await http.post(
-        url,
-        headers: {
-          'Authorization': '${widget.token.trim()}',
-          'Content-Type': 'application/json',
-        },
-        body: body,
+  try {
+    print('📤 북마크 생성 요청 바디: $body');
+    final response = await http.post(
+      url,
+      headers: {
+        'Authorization': '${widget.token.trim()}',
+        'Content-Type': 'application/json',
+      },
+      body: body,
+    );
+
+    print('🔴 북마크 생성 응답 코드: ${response.statusCode}');
+    print('🔴 북마크 생성 응답 바디: ${response.body}');
+
+    final data = jsonDecode(response.body);
+    final result = data['result'];
+
+    if ((data['code'] == 0 || data['code'] == 20003) &&
+        result != null &&
+        result['bookmark_id'] != null) {
+      setState(() {
+        bookmarkId = result['bookmark_id'];
+        isFavorite = true;
+      });
+
+      print('✅ 북마크 생성 성공! ID: $bookmarkId');
+
+      // 👉 MyPageScreen으로 데이터 반환
+      Navigator.pop(context, {
+        'bookmark_id': result['bookmark_id'],
+        'bookmark_type': result['target_type'] ?? 'POINT',
+      });
+    } else {
+      print('❌ 북마크 생성 실패: ${data['message']}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('북마크 등록 실패: ${data['message']}')),
       );
-
-      print('🔴 북마크 생성 응답 코드: ${response.statusCode}');
-      print('🔴 북마크 생성 응답 바디: ${response.body}');
-
-      final data = jsonDecode(response.body);
-      final result = data['result'];
-
-      if ((data['code'] == 0 || data['code'] == 20003) &&
-          result != null &&
-          result['bookmark_id'] != null) {
-        setState(() {
-          bookmarkId = result['bookmark_id'];
-          isFavorite = true;
-        });
-        print('✅ 북마크 생성 성공! ID: $bookmarkId');
-      } else {
-        print('❌ 북마크 생성 실패: ${data['message']}');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('북마크 등록 실패: ${data['message']}')),
-        );
-      }
-    } catch (e) {
-      print('❌ 북마크 등록 예외 발생: $e');
     }
+  } catch (e) {
+    print('❌ 북마크 등록 예외 발생: $e');
   }
+}
+
 
   Future<void> deleteBookmark() async {
     if (bookmarkId == null) return;
