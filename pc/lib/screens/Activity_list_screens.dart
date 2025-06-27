@@ -44,14 +44,24 @@ class _ActivityListScreensState extends State<ActivityListScreens> {
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(utf8.decode(response.bodyBytes));
-      setState(() {
-        points = data['result']['points'];
-      });
-    } else {
-      print('📡 요청 실패: ${response.statusCode}');
-      print('응답 내용: ${response.body}');
-    }
+  final data = jsonDecode(utf8.decode(response.bodyBytes));
+
+  final result = data['result'];
+  if (result != null && result['points'] != null) {
+    setState(() {
+      points = result['points'];
+    });
+  } else {
+    print('⚠️ result 또는 points가 null입니다');
+    setState(() {
+      points = [];
+    });
+  }
+} else {
+  print('📡 요청 실패: ${response.statusCode}');
+  print('응답 내용: ${response.body}');
+}
+
   }
 
   Future<void> searchActivities(String keyword) async {
