@@ -30,7 +30,7 @@ class _NavScreensState extends State<NavScreens> {
   }
 
   List<Widget> get _screens => [
-    HomeScreens(token: widget.token),
+    HomeScreens(token: widget.token, userId: widget.userId),
     MyPageScreen(userId: widget.userId, token: widget.token),
   ];
 
