@@ -25,6 +25,8 @@ class _RecruitDetailScreensState extends State<RecruitDetailScreens> {
   Map<String, dynamic>? recruitData;
   bool isFavorite = false;
   bool isLoading = true;
+  int? bookmarkId;
+  String? bookmarkType;
 
   @override
   void initState() {
@@ -39,14 +41,24 @@ class _RecruitDetailScreensState extends State<RecruitDetailScreens> {
     final response = await http.get(
       url,
       headers: {
-        'Authorization': widget.token,
+        'Authorization': '${widget.token.trim()}',
         'Content-Type': 'application/json',
       },
     );
 
     if (response.statusCode == 200) {
       final decoded = jsonDecode(response.body);
+      final bookmark = decoded['result']['bookmark'];
       setState(() {
+        if (bookmark != null &&
+            bookmark is Map &&
+            bookmark['bookmark_id'] != null) {
+              bookmarkId = bookmark['bookmark_id'];
+              isFavorite = true;
+            } else {
+              bookmarkId = null;
+              isFavorite = false;
+            }
         recruitData = decoded['result']['recruit'];
         isLoading = false;
       });
@@ -55,6 +67,90 @@ class _RecruitDetailScreensState extends State<RecruitDetailScreens> {
       setState(() => isLoading = false);
     }
   }
+
+  Future<void> toggleBookmark() async {
+  final url = Uri.parse('http://43.201.74.44/api/v1/bookmarks');
+  final body = jsonEncode({'id': widget.recruitId, 'target_type': 'RECRUIT'});
+
+  try {
+    print('📤 북마크 생성 요청 바디: $body');
+    final response = await http.post(
+      url,
+      headers: {
+        'Authorization': '${widget.token.trim()}',
+        'Content-Type': 'application/json',
+      },
+      body: body,
+    );
+
+    print('🔴 북마크 생성 응답 코드: ${response.statusCode}');
+    print('🔴 북마크 생성 응답 바디: ${response.body}');
+
+    final data = jsonDecode(response.body);
+    final result = data['result'];
+
+    if ((data['code'] == 0 || data['code'] == 20003) &&
+        result != null &&
+        result['bookmark_id'] != null) {
+      setState(() {
+        bookmarkId = result['bookmark_id'];
+        bookmarkType = result['target_type'] ?? 'RECRUIT';
+        isFavorite = true;
+      });
+
+      print('✅ 북마크 생성 성공! ID: $bookmarkId');
+      print('✅ 북마크 생성 성공! TYPE: $bookmarkType');
+
+      // 👉 MyPageScreen으로 데이터 반환
+      Navigator.pop(context, {
+        'bookmark_id': result['bookmark_id'],
+        'bookmark_type': result['target_type'] ?? 'RECRUIT',
+      });
+    } else {
+      print('❌ 북마크 생성 실패: ${data['message']}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('북마크 등록 실패: ${data['message']}')),
+      );
+    }
+  } catch (e) {
+    print('❌ 북마크 등록 예외 발생: $e');
+  }
+}
+
+
+  Future<void> deleteBookmark() async {
+    if (bookmarkId == null) return;
+
+    final url = Uri.parse(
+      'http://43.201.74.44/api/v1/bookmarks/RECRUIT/$bookmarkId',
+    );
+
+    try {
+      final response = await http.delete(
+        url,
+        headers: {
+          'Authorization': '${widget.token.trim()}',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print('🧨 DELETE 응답 코드: ${response.statusCode}');
+      print('🧨 DELETE 응답 바디: ${response.body}');
+
+      final data = jsonDecode(response.body);
+
+      if (data['code'] == 0 || data['code'] == 20004 || data['code'] == 40404) {
+        await fetchRecruitDetail(); // 최신 상태 동기화
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('북마크 삭제 실패: ${data['message']}')),
+        );
+      }
+    } catch (e) {
+      print('❌ 북마크 삭제 예외 발생: $e');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -66,8 +162,8 @@ class _RecruitDetailScreensState extends State<RecruitDetailScreens> {
       return const Scaffold(body: Center(child: Text('데이터를 불러오지 못했습니다.')));
     }
 
-    final title = recruitData?['recruitName'] ?? '';
-    final deadline = recruitData?['recruitDeadline']?.split('T')[0] ?? '';
+    final title = recruitData?['recruitName'] ?? '-';
+    final deadline = recruitData?['recruitDeadline']?.split('T')[0] ?? '-';
     final company = recruitData?['recruitCompany'] ?? '-';
     final detail = recruitData?['recruitDetail'] ?? '-';
     final location = recruitData?['recruitPlace'] ?? '-';
@@ -96,13 +192,17 @@ class _RecruitDetailScreensState extends State<RecruitDetailScreens> {
         padding: const EdgeInsets.all(20),
         child: ListView(
           children: [
+            const SizedBox(height: 10),
             Center(
               child: IconButton(
-                onPressed: () {
-                  setState(() {
-                    isFavorite = !isFavorite;
-                  });
+                onPressed: () async {
+                  if (isFavorite) {
+                    await deleteBookmark();
+                  } else {
+                    await toggleBookmark();
+                  }
                 },
+
                 icon: Icon(
                   isFavorite ? Icons.star_rounded : Icons.star_border_rounded,
                   size: 28,
@@ -123,24 +223,24 @@ class _RecruitDetailScreensState extends State<RecruitDetailScreens> {
             const SizedBox(height: 12),
             Row(
               children: [
-                Icon(Icons.business),
-                SizedBox(width: 6),
+                const Icon(Icons.business),
+                const SizedBox(width: 6),
                 Text(company),
               ],
             ),
             const SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.calendar_today),
-                SizedBox(width: 6),
+                const Icon(Icons.calendar_today),
+                const SizedBox(width: 6),
                 Text(deadline),
               ],
             ),
             const SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.location_on_outlined),
-                SizedBox(width: 6),
+                const Icon(Icons.location_on_outlined),
+                const SizedBox(width: 6),
                 Text(location),
               ],
             ),
@@ -154,25 +254,24 @@ class _RecruitDetailScreensState extends State<RecruitDetailScreens> {
             const SizedBox(height: 20),
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child:
-                  safeImageUrl.isNotEmpty
-                      ? Image.network(
-                        safeImageUrl,
-                        height: 200,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Image.asset(
-                            'assets/images/cat.jpg', // ✅ 대체 이미지 경로
-                            height: 200,
-                            fit: BoxFit.cover,
-                          );
-                        },
-                      )
-                      : Image.asset(
-                        'assets/images/cat.jpg',
-                        height: 200,
-                        fit: BoxFit.cover,
-                      ),
+              child: safeImageUrl.isNotEmpty
+                  ? Image.network(
+                      safeImageUrl,
+                      height: 200,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          'assets/images/cat.jpg',
+                          height: 200,
+                          fit: BoxFit.cover,
+                        );
+                      },
+                    )
+                  : Image.asset(
+                      'assets/images/cat.jpg',
+                      height: 200,
+                      fit: BoxFit.cover,
+                    ),
             ),
             const SizedBox(height: 20),
             SizedBox(
@@ -225,12 +324,11 @@ class _RecruitDetailScreensState extends State<RecruitDetailScreens> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder:
-                    (_) => NavScreens(
-                      token: widget.token,
-                      userId: widget.userId,
-                      initialIndex: index,
-                    ),
+                builder: (_) => NavScreens(
+                  token: widget.token,
+                  userId: widget.userId,
+                  initialIndex: index,
+                ),
               ),
             );
           }
