@@ -22,17 +22,20 @@ jobs:
 
       - name: Install Flutter dependencies
         run: flutter pub get
+        working-directory: pc
 
       - name: Install CocoaPods
         run: |
           cd ios
           pod install
+        working-directory: pc
 
       - name: Build IPA
         run: flutter build ipa --no-codesign
+        working-directory: pc
 
-      - name: Upload IPA file
+      - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
           name: ios-build
-          path: build/ios/ipa/*.ipa
+          path: pc/build/ios/ipa/*.ipa
