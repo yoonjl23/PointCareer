@@ -1,34 +1,38 @@
 name: Build iOS .ipa
 
 on:
-  workflow_dispatch:  # 수동 실행 가능
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
 
 jobs:
   build:
     runs-on: macos-latest
 
     steps:
-      - name: 🔄 코드 체크아웃
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: 🛠️ Flutter 설치
+      - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.22.0'
 
-      - name: 📦 의존성 설치
+      - name: Install Flutter dependencies
         run: flutter pub get
 
-      - name: 🍎 iOS 의존성 설치
+      - name: Install CocoaPods
         run: |
           cd ios
           pod install
 
-      - name: 🧱 IPA 빌드 (서명 없음)
+      - name: Build IPA
         run: flutter build ipa --no-codesign
 
-      - name: 📤 아티팩트 업로드 (.ipa)
-        uses: actions/upload-artifact@v3
+      - name: Upload IPA file
+        uses: actions/upload-artifact@v4
         with:
           name: ios-build
           path: build/ios/ipa/*.ipa
