@@ -67,14 +67,14 @@ class Point {
     pointDeadline: json['pointDeadline'] ?? '',
     pointPrice: json['pointPrice'] ?? 0,
     pointImageUrl: json['pointImageUrl'] ?? '',
-    bookmarkId: json['bookmark_id'] ?? 0,
-    bookmarkType: json['bookmark_type'] ?? '',
+    bookmarkId: json['bookmarkId'] ?? 1,
+    bookmarkType: json['bookmarkType'] ?? 'POINT',
   );
 }
 
 class Recruit {
-  final int recruitId;
-  final String recruitName, recruitCompany, recruitDeadline, recruitImageUrl;
+  final int recruitId, bookmarkId;
+  final String recruitName, recruitCompany, recruitDeadline, recruitImageUrl, bookmarkType;
   final List<String> favoriteCategories;
   final List<String> recruitJobCategories;
 
@@ -86,9 +86,15 @@ class Recruit {
     required this.recruitImageUrl,
     required this.favoriteCategories,
     required this.recruitJobCategories,
+    required this.bookmarkId,
+    required this.bookmarkType
   });
 
-  factory Recruit.fromJson(Map<String, dynamic> json) => Recruit(
+  factory Recruit.fromJson(Map<String, dynamic> json) {
+    print('📦 recruit json: ${jsonEncode(json)}'); // 추가  
+  
+  return Recruit(
+    
     recruitId: json['recruitId'],
     recruitName: json['recruitName'],
     recruitCompany: json['recruitCompany'],
@@ -96,7 +102,10 @@ class Recruit {
     recruitImageUrl: json['recruitImageUrl'],
     favoriteCategories: List<String>.from(json['favoriteCategories'] ?? []),
     recruitJobCategories: List<String>.from(json['recruitJobCategories'] ?? []),
+    bookmarkId: json['bookmarkId'] ?? 0,
+    bookmarkType: json['bookmarkType'] ?? 'RECRUIT'
   );
+  }
 }
 
 // ✅ 올바른 위치: 전역 fetch 함수
@@ -143,6 +152,9 @@ class _MyPageScreenState extends State<MyPageScreen> {
   // ✅ 북마크 삭제
   Future<void> deleteBookmark(int bookmarkId, String bookmarkType) async {
      print('🚀 fetchMyPageData 시작');
+     print('📛 bookmarkId: $bookmarkId');
+     print('📛 bookmarkType: $bookmarkType');
+
     final url = Uri.parse(
       'http://43.201.74.44/api/v1/bookmarks/$bookmarkType/$bookmarkId',
     );
@@ -162,6 +174,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
           (json['code'] == 0 || json['code'] == 20004)) {
         print('✅ 북마크 삭제 성공');
         setState(() {
+          print('🔄 MyPage futureData 새로고침 중...');
           futureData = fetchMyPageData(widget.userId, widget.token);
         });
       } else {
@@ -171,8 +184,6 @@ class _MyPageScreenState extends State<MyPageScreen> {
       print('❗ 예외 발생: $e');
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -188,10 +199,10 @@ class _MyPageScreenState extends State<MyPageScreen> {
         future: futureData,
         builder: (context, snapshot) {
           print('📊 snapshot.connectionState: ${snapshot.connectionState}');
-    print('📊 snapshot.hasData: ${snapshot.hasData}');
-    print('📊 snapshot.hasError: ${snapshot.hasError}');
-    print('📊 snapshot.data: ${snapshot.data}');
-    print('📊 snapshot.error: ${snapshot.error}');
+          print('📊 snapshot.hasData: ${snapshot.hasData}');
+          print('📊 snapshot.hasError: ${snapshot.hasError}');
+          print('📊 snapshot.data: ${snapshot.data}');
+          print('📊 snapshot.error: ${snapshot.error}');
     if (snapshot.hasError) {
   return Center(child: Text('에러 발생: ${snapshot.error}'));
 }
@@ -250,7 +261,16 @@ class _MyPageScreenState extends State<MyPageScreen> {
                           ),
                         );
                       },
-                    
+                      onDelete: (p.bookmarkId != 0 && p.bookmarkType.isNotEmpty) ? () {
+                        print('🗑️ 삭제할 북마크 ID: ${p.bookmarkId}, TYPE: ${p.bookmarkType}');
+              deleteBookmark(p.bookmarkId, p.bookmarkType);
+            }
+          : () {
+              print('❌ 북마크 정보 없음 → 삭제 비활성');
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('삭제할 북마크 정보가 없습니다.')),
+              );
+            },
                       point: '${p.pointPrice}P',
                     ),
                   ),
@@ -260,31 +280,70 @@ class _MyPageScreenState extends State<MyPageScreen> {
               const Text('저장된 추천채용공고', style: TextStyle(color: Colors.black54)),
               const SizedBox(height: 10),
               ...data.recruits.map(
-                (r) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: buildRecruitCard(
-                    title: r.recruitName,
-                    company: r.recruitCompany,
-                    imagePath: r.recruitImageUrl,
-                    deadline: getDDay(r.recruitDeadline),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => RecruitDetailScreens(
-                            userId: widget.userId,
-                            token: widget.token,
-                            recruitId: r.recruitId,
-                          ),
-                        ),
-                      );
-                    },
-                  
-                    field: r.favoriteCategories.join(', '),
-                    theme: r.recruitJobCategories.join(', '),
-                    ),
-                ),
-                ).toList(),
+  (r) {
+    print('📍 북마크 ID: ${r.bookmarkId}, TYPE: ${r.bookmarkType}');
+
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: buildRecruitCard(
+      title: r.recruitName,
+      company: r.recruitCompany,
+      imagePath: r.recruitImageUrl,
+      deadline: getDDay(r.recruitDeadline),
+      field: r.favoriteCategories.join(', '),
+      theme: r.recruitJobCategories.join(', '),
+
+      // ✅ 상세화면 이동 + bookmark 정보 수신
+      onTap: () async {
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => RecruitDetailScreens(
+              userId: widget.userId,
+              token: widget.token,
+              recruitId: r.recruitId,
+            ),
+          ),
+        );
+
+        if (result != null &&
+            result['bookmark_id'] != null &&
+            result['target_type'] != null) {
+          final bookmarkId = result['bookmark_id'];
+          final bookmarkType = result['bookmark_type'];
+
+          print('📥 RecruitDetail에서 받은 북마크 ID: $bookmarkId');
+          print('📥 RecruitDetail에서 받은 북마크 TYPE: $bookmarkType');
+
+          // 👉 최신 북마크 정보로 삭제 수행
+          await deleteBookmark(bookmarkId, bookmarkType);
+
+          // 👉 또는 전체 리스트 갱신
+          setState(() {
+            print('🔄 MyPage futureData 새로고침 중...');
+            futureData = fetchMyPageData(widget.userId, widget.token);
+          });
+        }
+      },
+
+      // ✅ 초기 상태의 북마크 삭제 기능
+      onDelete: (r.bookmarkId != 0 && r.bookmarkType.isNotEmpty)
+    ? () {
+        print('🗑️ 삭제할 북마크 ID: ${r.bookmarkId}, TYPE: ${r.bookmarkType}');
+        deleteBookmark(r.bookmarkId, r.bookmarkType);
+      }
+    : () {
+        print('❌ 북마크 정보 없음 → 삭제 비활성');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('삭제할 북마크 정보가 없습니다.')),
+        );
+      },
+
+    ),
+  );
+  }
+).toList(),
+
             ],
           );
         },
@@ -296,6 +355,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
     required String title,
     required String imagePath,
     required VoidCallback onTap,
+    required VoidCallback onDelete,
     required String point,
   }) {
     return GestureDetector(
@@ -318,23 +378,30 @@ class _MyPageScreenState extends State<MyPageScreen> {
               ],
             ),
             const SizedBox(height: 12),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child:
-                  imagePath.isNotEmpty
-                      ? Image.network(
-                        imagePath,
-                        height: 100,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            height: 100,
-                            color: Colors.grey[300],
-                          ); // 에러 시 기본
-                        },
-                      )
-                      : Container(height: 100, color: Colors.grey[300]),
+            Stack(
+              children: [ ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child:
+                    imagePath.isNotEmpty
+                        ? Image.network(
+                          imagePath,
+                          height: 100,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              height: 100,
+                              color: Colors.grey[300],
+                            ); // 에러 시 기본
+                          },
+                        )
+                        : Container(height: 100, color: Colors.grey[300]),
+              ),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: IconButton(onPressed: onDelete, icon: const Icon(Icons.close)))
+              ]
             ),
             const SizedBox(height: 12),
             Text(
@@ -387,6 +454,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
     required String company,
     required String imagePath,
     required VoidCallback onTap,
+    required VoidCallback onDelete,
     required String field,
     required String deadline,
     required String theme,
@@ -451,6 +519,11 @@ class _MyPageScreenState extends State<MyPageScreen> {
                       ),
                     ),
                   ),
+                ),
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  child: IconButton(onPressed: onDelete, icon: Icon(Icons.close)),
                 ),
               ],
             ),
