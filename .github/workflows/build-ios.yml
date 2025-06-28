@@ -30,21 +30,20 @@ jobs:
           pod install
         working-directory: pc
 
-      - name: Build IPA
-        run: flutter build ipa --no-codesign
+      - name: Build for iOS (no codesign)
+        run: flutter build ios --no-codesign
         working-directory: pc
 
-      - name: Export IPA from Xcode Archive
+      - name: Manually Package IPA Without Codesign
         run: |
-          xcodebuild -exportArchive \
-          -archivePath build/ios/archive/Runner.xcarchive \
-          -exportOptionsPlist ios/ExportOptions.plist \
-          -exportPath build/ios/ipa
+          mkdir -p build/ios/ipa/Payload
+          cp -r build/ios/iphoneos/Runner.app build/ios/ipa/Payload/
+          cd build/ios/ipa
+          zip -r Runner.ipa Payload
         working-directory: pc
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
           name: ios-build
-          path: pc/build/ios/ipa/*.ipa
-        
+          path: pc/build/ios/ipa/Runner.ipa
