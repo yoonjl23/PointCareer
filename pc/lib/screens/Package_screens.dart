@@ -1,176 +1,166 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:pc/screens/Activity_Detail_screens.dart';
 import 'package:pc/screens/Nav_Screens.dart';
 import 'package:pc/screens/Recruit_Detail_Screens.dart';
-import 'package:pc/screens/job_list_screens.dart';
+import 'package:pc/models/activity.dart';
 
 class PackageScreens extends StatefulWidget {
-  final String title;
   final String userId;
+  final String token;
+  final List<Activity> activities;
 
-  const PackageScreens({super.key, required this.title, required this.userId});
+  const PackageScreens({
+    super.key,
+    required this.token,
+    required this.userId,
+    required this.activities
+  });
 
   @override
   State<PackageScreens> createState() => _PackageScreensState();
 }
 
 class _PackageScreensState extends State<PackageScreens> {
-  final List<Map<String, String>> programs = [
-    {
-      'title': '[브라운백 시리즈] 오며가며 교양 토크쇼',
-      'imagePath': 'assets/images/targets.png',
-      'point': '10P',
-      'type': '온라인',
-      'duration': '2시간',
-      'field': '자기계발',
-      'category': '강연',
-      'date': '2025년 3월 30일',
-      'location': '수원 컨벤션 센터',
-    },
-    {
-      'title': '(지역사회문제 창의적해결방안 제안)',
-      'imagePath': 'assets/images/cat.jpg',
-      'point': '15P',
-      'type': '오프라인',
-      'duration': '3시간',
-      'field': '사회참여',
-      'category': '공모전',
-      'date': '2025년 3월 30일',
-      'location': '수원 컨벤션 센터',
-    },
-    {
-      'title': '[재맞고] 진로설계 포트폴리오 경진대회 청중평가단 모집',
-      'imagePath': 'assets/images/points.png',
-      'point': '5P',
-      'type': '온라인',
-      'duration': '1시간',
-      'field': '진로탐색',
-      'category': '봉사',
-      'date': '2025년 3월 30일',
-      'location': '수원 컨벤션 센터',
-    },
-  ];
+  String selectedValue = 'Select';
+  final TextEditingController searchController = TextEditingController();
+  List<Activity> points = [];
 
-  final List<Map<String, String>> jobs = [
-    {
-      'title': '[토스페이먼츠]',
-      'imagePath': 'assets/images/targets.png',
-      'point': '10P',
-      'type': '온라인',
-      'duration': '2시간',
-      'field': '자기계발',
-      'category': '강연',
-      'date': '2025년 3월 30일',
-      'location': '수원 컨벤션 센터',
-      'theme': '경영/사무',
-      'deadline': '2025년 5월 21일',
-    },
-    {
-      'title': '(지역사회문제 창의적해결방안 제안)',
-      'imagePath': 'assets/images/cat.jpg',
-      'point': '15P',
-      'type': '오프라인',
-      'duration': '3시간',
-      'field': '사회참여',
-      'category': '공모전',
-      'date': '2025년 3월 30일',
-      'location': '수원 컨벤션 센터',
-      'theme': '공모전',
-      'deadline': '2025년 5월 21일',
-    },
-    {
-      'title': '[재맞고] 진로설계 포트폴리오 경진대회 청중평가단 모집',
-      'imagePath': 'assets/images/points.png',
-      'point': '5P',
-      'type': '온라인',
-      'duration': '1시간',
-      'field': '진로탐색',
-      'category': '봉사',
-      'date': '2025년 3월 30일',
-      'location': '수원 컨벤션 센터',
-      'theme': '진로',
-      'deadline': '2025년 5월 21일',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    if (widget.activities != null) {
+      points = widget.activities!;
+    }
+    fetchSortedRecruits('최신순');
+  }
+
+  Future<void> fetchSortedRecruits(String sortType) async {
+    final url = Uri.parse(
+      'http://43.201.74.44/api/v1/points/activities/sort?sortType=$sortType',
+    );
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': '${widget.token}',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+  final data = jsonDecode(utf8.decode(response.bodyBytes));
+
+  final result = data['result'];
+  if (result != null && result['points'] != null) {
+  setState(() {
+    points = (result['points'] as List)
+        .map((e) => Activity.fromJson(e))
+        .toList();
+  });
+} else {
+    print('⚠️ result 또는 points가 null입니다');
+    setState(() {
+      points = [];
+    });
+  }
+} else {
+  print('📡 요청 실패: ${response.statusCode}');
+  print('응답 내용: ${response.body}');
+}
+
+  }
+
+  Future<void> searchActivities(String keyword) async {
+    final url = Uri.parse(
+      'http://43.201.74.44/api/v1/points/activities/search?keyword=$keyword',
+    );
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': '${widget.token}',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(utf8.decode(response.bodyBytes));
+      setState(() {
+        points = data['result']['points'];
+      });
+    } else {
+      print('❌ 검색 실패: ${response.statusCode}');
+      print('응답: ${response.body}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final bool isJobPackage =
-        widget.title.contains('진로') || widget.title.contains('취업');
-    final dataList = isJobPackage ? jobs : programs;
-
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F2),
       appBar: AppBar(
         backgroundColor: const Color(0xFFF2F2F2),
         elevation: 0,
-        automaticallyImplyLeading: true,
-        title: const Center(
-          child: Text(
-            '맞춤형 추천',
-            style: TextStyle(
-              fontFamily: "Roboto",
-              fontWeight: FontWeight.w400,
-              fontSize: 20,
-              color: Color(0xFF7B7B7B),
-            ),
+        title: const Text(
+          'KGU 프로그램',
+          style: TextStyle(color: Color(0xFF7B7B7B)),
+        ),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              const Text(
+                '원하시는 활동을 찾아보세요',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 30),
+              _buildSearchField(),
+              const SizedBox(height: 8),
+              _buildDropdown(),
+              const SizedBox(height: 20),
+              Expanded(
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 0.7,
+                  children:
+                      points.map((activity) {
+                        return buildProgramCard(
+                          title: activity.pointTitle ?? '제목 없음',
+                          imagePath: activity.pointImageUrl ?? '',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (_) => ActivityDetailScreens(
+                                      userId: widget.userId,
+                                      token: widget.token,
+                                      pointId: activity.pointId,
+                                    ),
+                              ),
+                            );
+                          },
+                          onoff: activity.isPointOnline ?? '정보 없음',
+                          duration: '${activity.pointDuration}' ?? '정보 없음',
+                          point: '${activity.pointPrice}P',
+                        );
+                      }).toList(),
+                ),
+              ),
+            ],
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 30),
-            Text(
-              widget.title,
-              style: const TextStyle(
-                fontFamily: "Roboto",
-                fontWeight: FontWeight.w600,
-                fontSize: 24,
-                letterSpacing: -0.72,
-                color: Color(0xFF262626),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.7,
-                children:
-                    dataList.map((program) {
-                      final imagePath = program['imagePath'] ?? '';
-                      final title = program['title'] ?? '';
-                      final field = program['field'] ?? '';
-                      final deadline = getDDay(program['deadline'] ?? '');
-                      final theme = program['theme'] ?? '';
-
-                      return isJobPackage
-                          ? buildProgramCards(
-                            title: title,
-                            imagePath: imagePath,
-                            field: field,
-                            deadline: deadline,
-                            theme: theme,
-                            onTap: () => navigateToDetail(program),
-                          )
-                          : buildProgramCard(
-                            title: title,
-                            imagePath: imagePath,
-                            onTap: () => navigateToDetail(program),
-                            tags: [program['type'] ?? '', '2주이내', '포인트'],
-                          );
-                    }).toList(),
-              ),
-            ),
-          ],
-        ),
-      ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFFF2F2F2),
+        backgroundColor: Color(0xFFF2F2F2),
         currentIndex: 1,
         onTap: (index) {
           Navigator.pushReplacement(
@@ -178,7 +168,7 @@ class _PackageScreensState extends State<PackageScreens> {
             MaterialPageRoute(
               builder:
                   (_) => NavScreens(
-                    token: widget.userId,
+                    token: widget.token,
                     userId: widget.userId,
                     initialIndex: index,
                   ),
@@ -200,17 +190,54 @@ class _PackageScreensState extends State<PackageScreens> {
     );
   }
 
-  void navigateToDetail(Map<String, String> program) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (_) => RecruitDetailScreens(
-              userId: widget.userId,
-              token: widget.title,
-              recruitId: 1,
-            ),
+  Widget _buildSearchField() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
       ),
+      child: TextField(
+        controller: searchController,
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          hintText: 'ex) 맞춤형 입력 설정',
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              final keyword = searchController.text.trim();
+              if (keyword.isNotEmpty) {
+                searchActivities(keyword);
+              }
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDropdown() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        DropdownButton<String>(
+          value: selectedValue,
+          items:
+              [
+                'Select',
+                '최신순',
+                '인기순',
+              ].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+          onChanged: (val) {
+            setState(() {
+              selectedValue = val!;
+            });
+            if (val != 'Select') {
+              fetchSortedRecruits(val!); // ⬅ 정렬 API 호출
+            }
+          },
+        ),
+      ],
     );
   }
 
@@ -218,7 +245,9 @@ class _PackageScreensState extends State<PackageScreens> {
     required String title,
     required String imagePath,
     required VoidCallback onTap,
-    required List<String> tags,
+    required String onoff,
+    required String duration,
+    required String point,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -228,151 +257,62 @@ class _PackageScreensState extends State<PackageScreens> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
+            BoxShadow(color: Colors.grey.withOpacity(0.1), blurRadius: 8),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children:
-                  tags
-                      .map(
-                        (tag) => Padding(
-                          padding: const EdgeInsets.only(right: 2),
-                          child: buildTag(tag, highlight: tag.contains('포인트')),
-                        ),
-                      )
-                      .toList(),
+            Wrap(
+              spacing: 4,
+              runSpacing: 4,
+              alignment: WrapAlignment.start,
+              clipBehavior: Clip.hardEdge,
+              children: [
+                buildTag(onoff),
+                buildTag(duration),
+                buildTag(point, highlight: true),
+              ],
             ),
             const SizedBox(height: 12),
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.asset(
-                imagePath,
-                height: 100,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
+              child:
+                  imagePath.isNotEmpty
+                      ? Image.network(
+                        imagePath,
+                        height: 100,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            height: 100,
+                            color: Colors.grey[300],
+                          ); // 에러 시 기본
+                        },
+                      )
+                      : Container(height: 100, color: Colors.grey[300]),
             ),
             const SizedBox(height: 12),
             Text(
               title,
               style: const TextStyle(
-                fontFamily: "Roboto",
-                fontWeight: FontWeight.w400,
                 fontSize: 12,
+                fontWeight: FontWeight.w400,
                 color: Color(0xFF262626),
-                letterSpacing: -0.36,
+                letterSpacing: 12 * -0.03,
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildProgramCards({
-    required String title,
-    required String imagePath,
-    required VoidCallback onTap,
-    required String field,
-    required String deadline,
-    required String theme,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(
-                    imagePath,
-                    height: 100,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFDCE9FA),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      deadline,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF2A6FB0),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
             ),
             const SizedBox(height: 12),
-            Text(
-              title,
-              style: const TextStyle(
-                fontFamily: "Roboto",
-                fontWeight: FontWeight.w400,
-                fontSize: 12,
-                color: Color(0xFF262626),
-                letterSpacing: -0.03,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              theme,
-              style: const TextStyle(
-                fontFamily: 'Roboto',
-                fontWeight: FontWeight.w400,
-                fontSize: 14,
-                letterSpacing: -0.42,
-                color: Color(0xFF7B7B7B),
-              ),
-            ),
-            const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: const Color(0xFFFFF1DB),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Text(
-                field,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFFEA7500),
-                ),
+              child: const Text(
+                '관련 분야',
+                style: TextStyle(fontSize: 12, color: Color(0xFFEA7500)),
               ),
             ),
           ],
@@ -390,34 +330,15 @@ class _PackageScreensState extends State<PackageScreens> {
       ),
       child: Text(
         text,
+        softWrap: false,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
           fontSize: 10,
+          letterSpacing: 10 * -0.03,
           fontWeight: FontWeight.w400,
           color: highlight ? const Color(0xFFB86F0D) : const Color(0xFF2A6FB0),
         ),
       ),
     );
-  }
-
-  String getDDay(String dateString) {
-    try {
-      final regex = RegExp(r'(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일');
-      final match = regex.firstMatch(dateString);
-      if (match != null) {
-        final year = int.parse(match.group(1)!);
-        final month = int.parse(match.group(2)!);
-        final day = int.parse(match.group(3)!);
-        final deadline = DateTime(year, month, day);
-        final now = DateTime.now();
-        final diff = deadline.difference(now).inDays;
-
-        if (diff > 0) return 'D-$diff';
-        if (diff == 0) return 'D-Day';
-        return 'D+${-diff}';
-      }
-      return '상시모집';
-    } catch (_) {
-      return '날짜 오류';
-    }
   }
 }
